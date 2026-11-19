@@ -1,0 +1,73 @@
+## 기본(.env): WEB_PORT=8090, API_PORT=5000, APP_MODE=dev
+$ docker compose exec api printenv PORT APP_MODE
+5000
+dev
+
+$ docker compose down
+ Container codyssey-web-1  Stopping
+ Container codyssey-web-1  Stopped
+ Container codyssey-web-1  Removing
+ Container codyssey-web-1  Removed
+ Container codyssey-api-1  Stopping
+ Container codyssey-api-1  Stopped
+ Container codyssey-api-1  Removing
+ Container codyssey-api-1  Removed
+ Network codyssey_backend  Removing
+ Network codyssey_backend  Removed
+
+## 코드 수정 없이 환경 변수만 변경해서 재실행
+$ WEB_PORT=8091 API_PORT=7000 APP_MODE=prod docker compose up -d
+ Network codyssey_backend  Creating
+ Network codyssey_backend  Created
+ Container codyssey-api-1  Creating
+ Container codyssey-api-1  Created
+ Container codyssey-web-1  Creating
+ Container codyssey-web-1  Created
+ Container codyssey-api-1  Starting
+ Container codyssey-api-1  Started
+ Container codyssey-api-1  Waiting
+ Container codyssey-api-1  Healthy
+ Container codyssey-web-1  Starting
+ Container codyssey-web-1  Started
+
+$ docker compose ps
+NAME             IMAGE              COMMAND                  SERVICE   CREATED          STATUS                                     PORTS
+codyssey-api-1   codyssey-api:1.0   "python app.py"          api       11 seconds ago   Up 11 seconds (healthy)                    7000/tcp
+codyssey-web-1   codyssey-web:1.0   "/docker-entrypoint.…"   web       11 seconds ago   Up Less than a second (health: starting)   0.0.0.0:8091->80/tcp
+
+$ curl -s http://localhost:8091/api/info
+{"service": "api", "hostname": "09c57ae2fe1f", "port": 7000, "mode": "prod", "time": "2026-11-19T06:16:38+00:00"}
+$ docker compose exec api printenv PORT APP_MODE
+7000
+prod
+
+$ docker compose exec web grep proxy_pass /etc/nginx/conf.d/default.conf
+        proxy_pass http://api:7000;
+
+$ docker compose logs api
+api-1  | api server listening on 0.0.0.0:7000 (mode=prod)
+
+$ curl -s -m 3 http://localhost:8090/health || echo '8090: connection failed (이제 8091 사용)'
+8090: connection failed (이제 8091 사용)
+
+## 운영 루틴: ps → logs → down
+$ docker compose ps
+NAME             IMAGE              COMMAND                  SERVICE   CREATED          STATUS                           PORTS
+codyssey-api-1   codyssey-api:1.0   "python app.py"          api       12 seconds ago   Up 11 seconds (healthy)          7000/tcp
+codyssey-web-1   codyssey-web:1.0   "/docker-entrypoint.…"   web       12 seconds ago   Up 1 second (health: starting)   0.0.0.0:8091->80/tcp
+
+$ docker compose down
+ Container codyssey-web-1  Stopping
+ Container codyssey-web-1  Stopped
+ Container codyssey-web-1  Removing
+ Container codyssey-web-1  Removed
+ Container codyssey-api-1  Stopping
+ Container codyssey-api-1  Stopped
+ Container codyssey-api-1  Removing
+ Container codyssey-api-1  Removed
+ Network codyssey_backend  Removing
+ Network codyssey_backend  Removed
+
+$ docker compose ps -a
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+

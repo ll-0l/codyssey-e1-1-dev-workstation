@@ -1,0 +1,12 @@
+# 아래 docker run 명령을 "문서화된 실행 설정"으로 옮긴 것
+#   docker run -d -p 8085:80 --name single-web codyssey-web:1.0
+name: codyssey-single
+
+services:
+  web:
+    build: ../../app
+    image: codyssey-web:1.0
+    container_name: single-web
+    ports:
+      - "8085:80"
+    restart: unless-stopped

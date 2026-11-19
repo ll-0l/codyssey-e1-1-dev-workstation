@@ -1,0 +1,19 @@
+$ docker info --format 'Server Version: {{.ServerVersion}}
+Operating System: {{.OperatingSystem}}
+OSType/Arch: {{.OSType}}/{{.Architecture}}
+Kernel: {{.KernelVersion}}
+CPUs: {{.NCPU}}  Memory: {{.MemTotal}}
+Storage Driver: {{.Driver}}
+Docker Root Dir: {{.DockerRootDir}}
+Containers: {{.Containers}} (Running {{.ContainersRunning}}, Stopped {{.ContainersStopped}})
+Images: {{.Images}}'
+Server Version: 28.1.1
+Operating System: Docker Desktop
+OSType/Arch: linux/x86_64
+Kernel: 6.10.14-linuxkit
+CPUs: 8  Memory: 8220110848
+Storage Driver: overlayfs
+Docker Root Dir: /var/lib/docker
+Containers: 1 (Running 0, Stopped 1)
+Images: 3
+

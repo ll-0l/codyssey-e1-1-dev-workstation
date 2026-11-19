@@ -1,0 +1,55 @@
+$ pwd
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/compose/single
+
+$ docker compose config
+name: codyssey-single
+services:
+  web:
+    build:
+      context: /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/app
+      dockerfile: Dockerfile
+    container_name: single-web
+    image: codyssey-web:1.0
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        target: 80
+        published: "8085"
+        protocol: tcp
+    restart: unless-stopped
+networks:
+  default:
+    name: codyssey-single_default
+
+$ docker compose up -d
+ Network codyssey-single_default  Creating
+ Network codyssey-single_default  Created
+ Container single-web  Creating
+ Container single-web  Created
+ Container single-web  Starting
+ Container single-web  Started
+
+$ docker compose ps
+NAME         IMAGE              COMMAND                  SERVICE   CREATED        STATUS                                     PORTS
+single-web   codyssey-web:1.0   "/docker-entrypoint.…"   web       1 second ago   Up Less than a second (health: starting)   0.0.0.0:8085->80/tcp
+
+$ curl -s http://localhost:8085/health
+ok
+
+$ docker compose logs --tail 3
+single-web  | 2026/11/19 06:15:41 [notice] 1#1: start worker process 34
+single-web  | 2026/11/19 06:15:41 [notice] 1#1: start worker process 35
+single-web  | 2026/11/19 06:15:41 [notice] 1#1: start worker process 36
+
+$ docker compose down
+ Container single-web  Stopping
+ Container single-web  Stopped
+ Container single-web  Removing
+ Container single-web  Removed
+ Network codyssey-single_default  Removing
+ Network codyssey-single_default  Removed
+
+$ docker compose ps -a
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+

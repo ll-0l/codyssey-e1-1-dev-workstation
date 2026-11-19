@@ -1,0 +1,101 @@
+## [파일] 실행 권한 실험
+$ printf '#!/bin/sh
+echo "script executed by $(whoami)"
+' > hello.sh
+
+$ ls -l hello.sh
+-rw-r--r--  1 sin-uilyeong  staff  46 Nov 19 15:13 hello.sh
+
+$ stat -f "%Sp %Lp %N" hello.sh
+-rw-r--r-- 644 hello.sh
+
+$ ./hello.sh
+(eval):1: permission denied: ./hello.sh
+
+$ chmod 755 hello.sh
+
+$ ls -l hello.sh
+-rwxr-xr-x  1 sin-uilyeong  staff  46 Nov 19 15:13 hello.sh
+
+$ stat -f "%Sp %Lp %N" hello.sh
+-rwxr-xr-x 755 hello.sh
+
+$ ./hello.sh
+script executed by sin-uilyeong
+
+$ chmod u-x,go-rx hello.sh
+
+$ stat -f "%Sp %Lp %N" hello.sh
+-rw------- 600 hello.sh
+
+$ chmod 644 hello.sh
+
+$ stat -f "%Sp %Lp %N" hello.sh
+-rw-r--r-- 644 hello.sh
+
+## [파일] 쓰기 권한 실험
+$ stat -f "%Sp %Lp %N" greeting.txt
+-rw-r--r-- 644 greeting.txt
+
+$ chmod 444 greeting.txt
+
+$ stat -f "%Sp %Lp %N" greeting.txt
+-r--r--r-- 444 greeting.txt
+
+$ echo 'append' >> greeting.txt
+(eval):1: permission denied: greeting.txt
+
+$ chmod 644 greeting.txt
+
+$ echo 'append' >> greeting.txt && cat greeting.txt
+Hello, Codyssey!
+append
+
+## [디렉토리] 권한 실험
+$ stat -f "%Sp %Lp %N" docs
+drwxr-xr-x 755 docs
+
+$ chmod 555 docs
+
+$ stat -f "%Sp %Lp %N" docs
+dr-xr-xr-x 555 docs
+
+$ ls docs
+memo.txt
+
+$ touch docs/new.txt
+touch: docs/new.txt: Permission denied
+
+$ chmod 311 docs
+
+$ stat -f "%Sp %Lp %N" docs
+d-wx--x--x 311 docs
+
+$ ls docs
+ls: docs: Permission denied
+
+$ cat docs/memo.txt
+터미널 실습 메모
+
+$ chmod 644 docs
+
+$ stat -f "%Sp %Lp %N" docs
+drw-r--r-- 644 docs
+
+$ cat docs/memo.txt
+cat: docs/memo.txt: Permission denied
+
+$ chmod 755 docs
+
+$ stat -f "%Sp %Lp %N" docs
+drwxr-xr-x 755 docs
+
+$ touch docs/new.txt
+
+$ ls -la docs
+total 8
+drwxr-xr-x  4 sin-uilyeong  staff  128 Nov 19 15:13 .
+drwxr-xr-x  8 sin-uilyeong  staff  256 Nov 19 15:13 ..
+-rw-r--r--  1 sin-uilyeong  staff   24 Nov 19 15:12 memo.txt
+-rw-r--r--  1 sin-uilyeong  staff    0 Nov 19 15:13 new.txt
+

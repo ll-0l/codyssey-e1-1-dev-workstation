@@ -1,0 +1,114 @@
+$ echo $SHELL
+/bin/zsh
+
+$ pwd
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation
+
+$ mkdir -p practice/docs practice/backup
+
+$ cd practice
+
+$ pwd
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/practice
+
+$ touch empty.txt
+
+$ echo 'Hello, Codyssey!' > hello.txt
+
+$ echo '터미널 실습 메모' > docs/memo.txt
+
+$ touch .hidden_config
+
+$ ls
+backup
+docs
+empty.txt
+hello.txt
+
+$ ls -la
+total 8
+drwxr-xr-x  7 sin-uilyeong  staff  224 Nov 19 15:12 .
+drwxr-xr-x  4 sin-uilyeong  staff  128 Nov 19 15:12 ..
+-rw-r--r--  1 sin-uilyeong  staff    0 Nov 19 15:12 .hidden_config
+drwxr-xr-x  2 sin-uilyeong  staff   64 Nov 19 15:12 backup
+drwxr-xr-x  3 sin-uilyeong  staff   96 Nov 19 15:12 docs
+-rw-r--r--  1 sin-uilyeong  staff    0 Nov 19 15:12 empty.txt
+-rw-r--r--  1 sin-uilyeong  staff   17 Nov 19 15:12 hello.txt
+
+$ cat hello.txt
+Hello, Codyssey!
+
+$ cat empty.txt
+
+$ wc -c empty.txt
+       0 empty.txt
+
+$ cp hello.txt backup/hello_copy.txt
+
+$ cp -r docs docs_copy
+
+$ mv hello.txt greeting.txt
+
+$ mv docs_copy backup/
+
+$ ls -la . backup
+.:
+total 8
+drwxr-xr-x  7 sin-uilyeong  staff  224 Nov 19 15:12 .
+drwxr-xr-x  4 sin-uilyeong  staff  128 Nov 19 15:12 ..
+-rw-r--r--  1 sin-uilyeong  staff    0 Nov 19 15:12 .hidden_config
+drwxr-xr-x  4 sin-uilyeong  staff  128 Nov 19 15:12 backup
+drwxr-xr-x  3 sin-uilyeong  staff   96 Nov 19 15:12 docs
+-rw-r--r--  1 sin-uilyeong  staff    0 Nov 19 15:12 empty.txt
+-rw-r--r--  1 sin-uilyeong  staff   17 Nov 19 15:12 greeting.txt
+
+backup:
+total 8
+drwxr-xr-x  4 sin-uilyeong  staff  128 Nov 19 15:12 .
+drwxr-xr-x  7 sin-uilyeong  staff  224 Nov 19 15:12 ..
+drwxr-xr-x  3 sin-uilyeong  staff   96 Nov 19 15:12 docs_copy
+-rw-r--r--  1 sin-uilyeong  staff   17 Nov 19 15:12 hello_copy.txt
+
+$ cd backup
+
+$ pwd
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/practice/backup
+
+$ cat ../docs/memo.txt
+터미널 실습 메모
+
+$ cat /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/practice/docs/memo.txt
+터미널 실습 메모
+
+$ cd ..
+
+$ rm backup/hello_copy.txt
+
+$ rm -r backup/docs_copy
+
+$ ls -la backup
+total 0
+drwxr-xr-x  2 sin-uilyeong  staff   64 Nov 19 15:12 .
+drwxr-xr-x  7 sin-uilyeong  staff  224 Nov 19 15:12 ..
+
+$ ls -laR
+total 8
+drwxr-xr-x  7 sin-uilyeong  staff  224 Nov 19 15:12 .
+drwxr-xr-x  4 sin-uilyeong  staff  128 Nov 19 15:12 ..
+-rw-r--r--  1 sin-uilyeong  staff    0 Nov 19 15:12 .hidden_config
+drwxr-xr-x  2 sin-uilyeong  staff   64 Nov 19 15:12 backup
+drwxr-xr-x  3 sin-uilyeong  staff   96 Nov 19 15:12 docs
+-rw-r--r--  1 sin-uilyeong  staff    0 Nov 19 15:12 empty.txt
+-rw-r--r--  1 sin-uilyeong  staff   17 Nov 19 15:12 greeting.txt
+
+./backup:
+total 0
+drwxr-xr-x  2 sin-uilyeong  staff   64 Nov 19 15:12 .
+drwxr-xr-x  7 sin-uilyeong  staff  224 Nov 19 15:12 ..
+
+./docs:
+total 8
+drwxr-xr-x  3 sin-uilyeong  staff   96 Nov 19 15:12 .
+drwxr-xr-x  7 sin-uilyeong  staff  224 Nov 19 15:12 ..
+-rw-r--r--  1 sin-uilyeong  staff   24 Nov 19 15:12 memo.txt
+

@@ -1,0 +1,9 @@
+$ docker start ubuntu-lab
+ubuntu-lab
+
+$ docker exec ubuntu-lab sh -c 'echo "exec works: $(hostname)"'
+exec works: 5506f113455a
+
+$ docker stop -t 1 ubuntu-lab
+ubuntu-lab
+

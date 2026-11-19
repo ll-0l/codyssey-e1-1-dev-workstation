@@ -1,0 +1,83 @@
+$ docker images
+REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
+
+$ docker run hello-world
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+4f55086f7dd0: Pulling fs layer
+4f55086f7dd0: Download complete
+4f55086f7dd0: Pull complete
+Digest: sha256:1e4c05b897a751332ce85c7e9449da2d93514ea2dea6dbb0e2753c9e949b2bfa
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+
+
+$ docker pull ubuntu:22.04
+22.04: Pulling from library/ubuntu
+02163de04dd1: Pulling fs layer
+02163de04dd1: Download complete
+02163de04dd1: Pull complete
+Digest: sha256:9abcaffc92a5279fff3a6a41635c0800ea33e528425fb389658806476e7defde
+Status: Downloaded newer image for ubuntu:22.04
+docker.io/library/ubuntu:22.04
+
+$ docker pull nginx:alpine
+alpine: Pulling from library/nginx
+c4f3d97811f6: Pulling fs layer
+881fc932939e: Pulling fs layer
+7cb374baf968: Pulling fs layer
+77a3bfea78f5: Pulling fs layer
+04c3905a997c: Pulling fs layer
+4c8c172c6586: Pulling fs layer
+1dc588c89da1: Pulling fs layer
+61d8f4c85a74: Pulling fs layer
+881fc932939e: Download complete
+881fc932939e: Pull complete
+61d8f4c85a74: Download complete
+1dc588c89da1: Download complete
+7cb374baf968: Download complete
+4c8c172c6586: Download complete
+04c3905a997c: Download complete
+77a3bfea78f5: Download complete
+c4f3d97811f6: Download complete
+61d8f4c85a74: Pull complete
+1dc588c89da1: Pull complete
+7cb374baf968: Pull complete
+4c8c172c6586: Pull complete
+04c3905a997c: Pull complete
+77a3bfea78f5: Pull complete
+c4f3d97811f6: Pull complete
+Digest: sha256:0563c36f94a6d3ec3584161b77859f740f7e20b4853f52c796a864ce6908e8ea
+Status: Downloaded newer image for nginx:alpine
+docker.io/library/nginx:alpine
+
+$ docker images
+REPOSITORY    TAG       IMAGE ID       CREATED        SIZE
+nginx         alpine    0563c36f94a6   14 hours ago   93.6MB
+ubuntu        22.04     9abcaffc92a5   8 days ago     118MB
+hello-world   latest    1e4c05b897a7   8 months ago   20.4kB
+
+$ docker ps -a
+CONTAINER ID   IMAGE         COMMAND    CREATED          STATUS                      PORTS     NAMES
+6b7e1e81ed98   hello-world   "/hello"   11 seconds ago   Exited (0) 10 seconds ago             quizzical_turing
+

@@ -1,0 +1,20 @@
+$ docker logs --tail 8 web-8080
+2026/11/19 06:14:26 [notice] 1#1: start worker process 30
+2026/11/19 06:14:26 [notice] 1#1: start worker process 31
+2026/11/19 06:14:26 [notice] 1#1: start worker process 32
+2026/11/19 06:14:26 [notice] 1#1: start worker process 33
+2026/11/19 06:14:26 [notice] 1#1: start worker process 34
+2026/11/19 06:14:26 [notice] 1#1: start worker process 35
+2026/11/19 06:14:26 [notice] 1#1: start worker process 36
+192.168.65.1 - - [19/Nov/2026:06:14:38 +0000] "GET / HTTP/1.1" 200 964 "-" "curl/8.7.1" "-"
+
+$ docker stats --no-stream
+CONTAINER ID   NAME       CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O     PIDS
+775dd0cdf020   web-8081   0.00%     7.688MiB / 7.656GiB   0.10%     2.05kB / 1.18kB   0B / 8.19kB   9
+7748f7cec1cb   web-8080   0.00%     7.617MiB / 7.656GiB   0.10%     1.97kB / 1.77kB   0B / 8.19kB   9
+
+$ docker stats --no-stream --format 'table {{.Name}}	{{.CPUPerc}}	{{.MemUsage}}	{{.NetIO}}' web-8080 web-8081
+NAME       CPU %     MEM USAGE / LIMIT     NET I/O
+web-8080   0.00%     7.617MiB / 7.656GiB   1.97kB / 1.77kB
+web-8081   0.00%     7.688MiB / 7.656GiB   2.05kB / 1.18kB
+

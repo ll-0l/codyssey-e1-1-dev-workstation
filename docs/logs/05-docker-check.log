@@ -1,0 +1,82 @@
+$ docker --version
+Docker version 28.1.1, build 4eba377
+
+$ docker compose version
+Docker Compose version v2.35.1-desktop.1
+
+$ docker version
+Client:
+ Version:           28.1.1
+ API version:       1.49
+ Go version:        go1.23.8
+ Git commit:        4eba377
+ Built:             Fri Apr 18 09:49:45 2025
+ OS/Arch:           darwin/amd64
+ Context:           desktop-linux
+
+Server: Docker Desktop 4.41.2 (191736)
+ Engine:
+  Version:          28.1.1
+  API version:      1.49 (minimum version 1.24)
+  Go version:       go1.23.8
+  Git commit:       01f442b
+  Built:            Fri Apr 18 09:52:57 2025
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.7.27
+  GitCommit:        05044ec0a9a75232cad458027ca83437aae3f4da
+ runc:
+  Version:          1.2.5
+  GitCommit:        v1.2.5-0-g59923ef
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+
+$ docker info 2>&1 | head -45
+Client:
+ Version:    28.1.1
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.1.7
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.23.0-desktop.1
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-buildx
+  cloud: Docker Cloud (Docker Inc.)
+    Version:  v0.3.0
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-cloud
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.35.1-desktop.1
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.38
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.1.8
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-desktop
+  dev: Docker Dev Environments (Docker Inc.)
+    Version:  v0.1.2
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-dev
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.27
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-extension
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-init
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Version:  dev
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-mcp
+  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)
+    Version:  0.6.0
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-sbom
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.17.1
+    Path:     /Users/sin-uilyeong/.docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 0
+  Running: 0
+

@@ -1,0 +1,23 @@
+# nginx 공식 이미지는 /etc/nginx/templates/*.template 의 ${VAR} 를
+# 컨테이너 시작 시 환경 변수로 치환해 /etc/nginx/conf.d/ 에 생성한다.
+server {
+    listen       80;
+    server_tokens off;
+
+    root   /usr/share/nginx/html;
+    index  index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location = /health {
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    # 서비스 이름(api)으로 다른 컨테이너를 찾아간다 (Compose 내부 DNS)
+    location /api/ {
+        proxy_pass http://api:${API_PORT};
+    }
+}

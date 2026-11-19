@@ -1,0 +1,54 @@
+$ git --version
+git version 2.37.1 (Apple Git-137.1)
+
+$ git config --global init.defaultBranch main
+
+$ git init
+Initialized empty Git repository in /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/.git/
+
+$ git config user.email 299768439+ll-0l@users.noreply.github.com
+
+$ git config user.name
+ryeong
+
+$ git config user.email
+299768439+ll-0l@users.noreply.github.com
+
+$ git config init.defaultBranch
+main
+
+$ git branch --show-current
+main
+
+$ git config --list --show-origin | grep -v -E 'sourcetree|stCommitMsg|excludesfile' | sed 's/<개인이메일>/<masked>/'  # 개인 이메일 마스킹
+file:/Library/Developer/CommandLineTools/usr/share/git-core/gitconfig	credential.helper=osxkeychain
+file:/Library/Developer/CommandLineTools/usr/share/git-core/gitconfig	init.defaultbranch=main
+file:/Users/sin-uilyeong/.gitconfig	user.name=ryeong
+file:/Users/sin-uilyeong/.gitconfig	user.email=<masked>@gmail.com
+file:/Users/sin-uilyeong/.gitconfig	init.defaultbranch=main
+file:.git/config	core.repositoryformatversion=0
+file:.git/config	core.filemode=true
+file:.git/config	core.bare=false
+file:.git/config	core.logallrefupdates=true
+file:.git/config	core.ignorecase=true
+file:.git/config	core.precomposeunicode=true
+file:.git/config	user.email=299768439+ll-0l@users.noreply.github.com
+
+
+## 원격 저장소 연결 후 재확인
+$ git config --list --show-origin | grep -v -E 'sourcetree|stCommitMsg|excludesfile' | sed 's/<개인이메일>/<masked>/'  # 개인 이메일 마스킹
+file:/Library/Developer/CommandLineTools/usr/share/git-core/gitconfig	credential.helper=osxkeychain
+file:/Library/Developer/CommandLineTools/usr/share/git-core/gitconfig	init.defaultbranch=main
+file:/Users/sin-uilyeong/.gitconfig	user.name=ryeong
+file:/Users/sin-uilyeong/.gitconfig	user.email=<masked>@gmail.com
+file:/Users/sin-uilyeong/.gitconfig	init.defaultbranch=main
+file:.git/config	core.repositoryformatversion=0
+file:.git/config	core.filemode=true
+file:.git/config	core.bare=false
+file:.git/config	core.logallrefupdates=true
+file:.git/config	core.ignorecase=true
+file:.git/config	core.precomposeunicode=true
+file:.git/config	user.email=299768439+ll-0l@users.noreply.github.com
+file:.git/config	remote.origin.url=git@github.com:ll-0l/codyssey-e1-1-dev-workstation.git
+file:.git/config	remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+

@@ -1,0 +1,98 @@
+## 바인드 마운트
+$ pwd
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation
+
+$ grep 'Page version' mount-demo/index.html
+    <p>Page version: <span class="ver">bind-mount v1</span></p>
+
+$ docker run -d -p 8082:80 --name web-bind -v "$(pwd)/mount-demo":/usr/share/nginx/html:ro codyssey-web:1.0
+1b1cdd35e9d7c2a4ea31853c5a31948f68787ea0149e23a8e8214d5f023c18fe
+
+$ docker inspect web-bind --format '{{range .Mounts}}{{.Type}}: {{.Source}} -> {{.Destination}} (RW={{.RW}}){{end}}'
+bind: /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/mount-demo -> /usr/share/nginx/html (RW=false)
+
+$ curl -s http://localhost:8082 | grep 'Page version'
+    <p>Page version: <span class="ver">bind-mount v1</span></p>
+
+$ sed -i '' 's/bind-mount v1/bind-mount v2 (호스트에서 수정됨)/' mount-demo/index.html
+
+$ grep 'Page version' mount-demo/index.html
+    <p>Page version: <span class="ver">bind-mount v2 (호스트에서 수정됨)</span></p>
+
+$ curl -s http://localhost:8082 | grep 'Page version'
+    <p>Page version: <span class="ver">bind-mount v2 (호스트에서 수정됨)</span></p>
+
+$ docker exec web-bind grep 'Page version' /usr/share/nginx/html/index.html
+    <p>Page version: <span class="ver">bind-mount v2 (호스트에서 수정됨)</span></p>
+
+$ docker exec web-bind sh -c 'echo hack > /usr/share/nginx/html/x.txt'
+sh: can't create /usr/share/nginx/html/x.txt: Read-only file system
+
+## Docker 볼륨 영속성
+$ docker volume create codyssey-data
+codyssey-data
+
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     codyssey-data
+
+$ docker volume inspect codyssey-data
+[
+    {
+        "CreatedAt": "2026-11-19T06:15:06Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/codyssey-data/_data",
+        "Name": "codyssey-data",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+$ docker run -d --name vol-test -v codyssey-data:/data ubuntu:22.04 sleep infinity
+dcdaa81d579c4e708f05bef082e98561e9a4ee476e35dfd969054eaddc9445bb
+
+$ docker exec vol-test bash -lc 'echo "persisted at $(date -u +%FT%TZ) from $(hostname)" > /data/hello.txt && cat /data/hello.txt && ls -l /data'
+persisted at 2026-11-19T06:15:07Z from dcdaa81d579c
+total 4
+-rw-r--r-- 1 root root 52 Nov 19 06:15 hello.txt
+
+$ docker rm -f vol-test
+vol-test
+
+$ docker ps -a --filter name=vol-test
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     codyssey-data
+
+$ docker run -d --name vol-test2 -v codyssey-data:/data ubuntu:22.04 sleep infinity
+d75cd493eb2557ba1dab1cb034aa1be8e98514446752bc219eaa4ee1574e4dc6
+
+$ docker exec vol-test2 bash -lc 'hostname; cat /data/hello.txt; ls -l /data'
+d75cd493eb25
+persisted at 2026-11-19T06:15:07Z from dcdaa81d579c
+total 4
+-rw-r--r-- 1 root root 52 Nov 19 06:15 hello.txt
+
+## 비교: 볼륨 없이 컨테이너 내부에 쓴 데이터
+$ docker run -d --name novol-test ubuntu:22.04 sleep infinity
+8ca3bdb3d8455d913e6817e9133236ffc0baec561cb6a043d1b83d09f5a573c5
+
+$ docker exec novol-test bash -lc 'echo temp > /tmp/temp.txt && cat /tmp/temp.txt'
+temp
+
+$ docker rm -f novol-test
+novol-test
+
+$ docker run -d --name novol-test ubuntu:22.04 sleep infinity
+68cb2cb9d92782b58afe380c9fee9f3c78e945888518b277a246a7f12ae2ee00
+
+$ docker exec novol-test bash -lc 'cat /tmp/temp.txt'
+cat: /tmp/temp.txt: No such file or directory
+
+$ docker rm -f novol-test vol-test2
+novol-test
+vol-test2
+

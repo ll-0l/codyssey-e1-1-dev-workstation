@@ -1,0 +1,106 @@
+## 1) docker run -it : 대화형 실행 후 exit
+$ printf 'cat /etc/os-release | head -2
+ls /
+echo "hello from container"
+exit
+' | script -q /dev/null docker run -it --name ubuntu-it ubuntu:22.04 bash
+cat /etc/os-release | head -2
+ls /
+echo "hello from container"
+exit
+cat /etc/os-release | head -2
+ls /
+echo "hello from container"
+exit
+root@569f5dafeff9:/# cat /etc/os-release | head -2
+PRETTY_NAME="Ubuntu 22.04.5 LTS"
+NAME="Ubuntu"
+root@569f5dafeff9:/# ls /
+bin   dev  home  lib32  libx32  mnt  proc  run   srv  tmp  var
+boot  etc  lib   lib64  media   opt  root  sbin  sys  usr
+root@569f5dafeff9:/# echo "hello from container"
+hello from container
+root@569f5dafeff9:/# exit
+exit
+
+$ docker ps -a --filter name=ubuntu-it
+CONTAINER ID   IMAGE          COMMAND   CREATED        STATUS                              PORTS     NAMES
+569f5dafeff9   ubuntu:22.04   "bash"    1 second ago   Exited (0) Less than a second ago             ubuntu-it
+
+## 2) docker run -dit + exec : 백그라운드 실행 후 exec로 진입
+$ docker run -dit --name ubuntu-lab ubuntu:22.04 bash
+5506f113455a386e70434799af7ca2b8f049b68c07594226361d31f187acec29
+
+$ docker exec ubuntu-lab ls /
+bin
+boot
+dev
+etc
+home
+lib
+lib32
+lib64
+libx32
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+
+$ docker exec ubuntu-lab echo "exec works: $(hostname)"
+exec works: sin-uilyeong-ui-MacBookPro.local
+
+$ printf 'echo inside exec shell, PID1=$(cat /proc/1/comm)
+exit
+' | script -q /dev/null docker exec -it ubuntu-lab bash
+echo inside exec shell, PID1=$(cat /proc/1/comm)
+exit
+echo inside exec shell, PID1=$(cat /proc/1/comm)
+exit
+root@5506f113455a:/# echo inside exec shell, PID1=$(cat /proc/1/comm)
+inside exec shell, PID1=bash
+root@5506f113455a:/# exit
+exit
+
+$ docker ps --filter name=ubuntu-lab
+CONTAINER ID   IMAGE          COMMAND   CREATED                  STATUS                  PORTS     NAMES
+5506f113455a   ubuntu:22.04   "bash"    Less than a second ago   Up Less than a second             ubuntu-lab
+
+## 3) docker attach : 메인 프로세스(PID 1)에 붙은 뒤 exit
+$ printf 'echo attached to PID1 shell
+exit
+' | script -q /dev/null docker attach ubuntu-lab
+echo attached to PID1 shell
+exit
+root@5506f113455a:/# echo attached to PID1 shell
+attached to PID1 shell
+
+exit
+
+$ docker ps -a --filter name=ubuntu-lab
+CONTAINER ID   IMAGE          COMMAND   CREATED        STATUS                              PORTS     NAMES
+5506f113455a   ubuntu:22.04   "bash"    1 second ago   Exited (0) Less than a second ago             ubuntu-lab
+
+## 4) start / stop
+$ docker start ubuntu-lab
+ubuntu-lab
+
+$ docker ps --filter name=ubuntu-lab
+CONTAINER ID   IMAGE          COMMAND   CREATED        STATUS                  PORTS     NAMES
+5506f113455a   ubuntu:22.04   "bash"    1 second ago   Up Less than a second             ubuntu-lab
+
+$ docker stop ubuntu-lab
+ubuntu-lab
+
+$ docker ps -a --filter name=ubuntu
+CONTAINER ID   IMAGE          COMMAND   CREATED          STATUS                                PORTS     NAMES
+5506f113455a   ubuntu:22.04   "bash"    11 seconds ago   Exited (137) Less than a second ago             ubuntu-lab
+569f5dafeff9   ubuntu:22.04   "bash"    12 seconds ago   Exited (0) 11 seconds ago                       ubuntu-it
+
