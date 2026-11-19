@@ -4,7 +4,7 @@ git version 2.37.1 (Apple Git-137.1)
 $ git config --global init.defaultBranch main
 
 $ git init
-Initialized empty Git repository in /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/.git/
+Initialized empty Git repository in /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/.git/
 
 $ git config user.email 299768439+ll-0l@users.noreply.github.com
 

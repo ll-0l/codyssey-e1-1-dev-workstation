@@ -16,3 +16,11 @@ $ ssh-keygen -lf ~/.ssh/ll-0l-GitHub.pub | sed -E 's/SHA256:[^ ]+/SHA256:<masked
 $ ssh -T git@github.com
 Hi ll-0l! You've successfully authenticated, but GitHub does not provide shell access.
 
+$ git log --oneline -1
+c9373a5 docs: E1-1 개발 워크스테이션 구축 결과물 및 기술 문서
+
+$ git push -u origin main
+To github.com:ll-0l/codyssey-e1-1-dev-workstation.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+

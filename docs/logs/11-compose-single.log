@@ -1,12 +1,12 @@
 $ pwd
-/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/compose/single
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/compose/single
 
 $ docker compose config
 name: codyssey-single
 services:
   web:
     build:
-      context: /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/app
+      context: /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/app
       dockerfile: Dockerfile
     container_name: single-web
     image: codyssey-web:1.0

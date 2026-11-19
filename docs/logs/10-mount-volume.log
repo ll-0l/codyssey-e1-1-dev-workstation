@@ -1,6 +1,6 @@
 ## 바인드 마운트
 $ pwd
-/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation
 
 $ grep 'Page version' mount-demo/index.html
     <p>Page version: <span class="ver">bind-mount v1</span></p>
@@ -9,7 +9,7 @@ $ docker run -d -p 8082:80 --name web-bind -v "$(pwd)/mount-demo":/usr/share/ngi
 1b1cdd35e9d7c2a4ea31853c5a31948f68787ea0149e23a8e8214d5f023c18fe
 
 $ docker inspect web-bind --format '{{range .Mounts}}{{.Type}}: {{.Source}} -> {{.Destination}} (RW={{.RW}}){{end}}'
-bind: /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/mount-demo -> /usr/share/nginx/html (RW=false)
+bind: /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/mount-demo -> /usr/share/nginx/html (RW=false)
 
 $ curl -s http://localhost:8082 | grep 'Page version'
     <p>Page version: <span class="ver">bind-mount v1</span></p>

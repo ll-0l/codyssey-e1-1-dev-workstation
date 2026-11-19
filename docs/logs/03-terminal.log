@@ -2,14 +2,14 @@ $ echo $SHELL
 /bin/zsh
 
 $ pwd
-/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation
 
 $ mkdir -p practice/docs practice/backup
 
 $ cd practice
 
 $ pwd
-/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/practice
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/practice
 
 $ touch empty.txt
 
@@ -72,12 +72,12 @@ drwxr-xr-x  3 sin-uilyeong  staff   96 Nov 19 15:12 docs_copy
 $ cd backup
 
 $ pwd
-/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/practice/backup
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/practice/backup
 
 $ cat ../docs/memo.txt
 터미널 실습 메모
 
-$ cat /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/practice/docs/memo.txt
+$ cat /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/practice/docs/memo.txt
 터미널 실습 메모
 
 $ cd ..

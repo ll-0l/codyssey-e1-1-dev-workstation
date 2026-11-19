@@ -164,12 +164,12 @@ docker volume rm codyssey-data
 
 ```bash
 $ pwd
-/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation
 
 $ mkdir -p practice/docs practice/backup      # -p : 중간 경로까지 한 번에 생성
 $ cd practice
 $ pwd
-/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/practice
+/Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/practice
 
 $ touch empty.txt                             # 빈 파일 생성
 $ echo 'Hello, Codyssey!' > hello.txt
@@ -205,7 +205,7 @@ $ mv docs_copy backup/                        # 이동
 $ cd backup
 $ cat ../docs/memo.txt                        # 상대 경로 (현재 위치 기준)
 터미널 실습 메모
-$ cat /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/practice/docs/memo.txt   # 절대 경로 (/ 부터)
+$ cat /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/practice/docs/memo.txt   # 절대 경로 (/ 부터)
 터미널 실습 메모
 $ cd ..
 
@@ -520,7 +520,7 @@ $ docker run -d -p 8082:80 --name web-bind \
     -v "$(pwd)/mount-demo":/usr/share/nginx/html:ro codyssey-web:1.0
 
 $ docker inspect web-bind --format '{{range .Mounts}}{{.Type}}: {{.Source}} -> {{.Destination}} (RW={{.RW}}){{end}}'
-bind: /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/mount-demo -> /usr/share/nginx/html (RW=false)
+bind: /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/mount-demo -> /usr/share/nginx/html (RW=false)
 
 # ── 변경 전 ──
 $ curl -s http://localhost:8082 | grep 'Page version'
@@ -906,7 +906,7 @@ $ docker ps -a --filter name=ubuntu
 
 ### 절대 경로 vs 상대 경로
 - **절대 경로**: 루트(`/`)부터 시작. 현재 위치와 무관하게 항상 같은 대상
-  `cat /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/E1-1-dev-workstation/practice/docs/memo.txt`
+  `cat /Users/sin-uilyeong/Desktop/Codyssey/all-in-one/Codyssey all-in-one Pre-course/E1-1-dev-workstation/practice/docs/memo.txt`
 - **상대 경로**: 현재 위치(`pwd`) 기준. `.` = 현재, `..` = 상위
   `practice/backup` 에서 `cat ../docs/memo.txt` → 같은 파일
 - 실무 팁: 스크립트/문서에는 PC 마다 다른 절대 경로를 하드코딩하지 말고 `$(pwd)` 나 상대 경로를 사용 (이 README 의 바인드 마운트 예시)
