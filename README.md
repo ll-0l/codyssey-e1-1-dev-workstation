@@ -91,9 +91,47 @@ codyssey-e1-1-dev-workstation/
 │   ├── api/ (Dockerfile, app.py)    # Python 표준 라이브러리 API
 │   └── web/default.conf.template    # api 로 프록시하는 nginx 템플릿
 └── docs/
+    ├── PEER_REVIEW.md           # 동료평가 대비 항목별 답변 정리
     ├── logs/                    # 단계별 전체 터미널 로그 (명령 + 출력)
     └── images/                  # 스크린샷 (브라우저 · VSCode)
 ```
+
+**구조를 이렇게 나눈 이유**
+
+| 디렉토리 | 분리 기준 |
+|---|---|
+| `app/` | **이미지 빌드 컨텍스트**. `docker build ./app` 시 이 폴더만 데몬으로 전송되므로, 이미지에 필요한 파일만 두어 빌드를 가볍게 하고 불필요한 파일 유입을 막음 |
+| `mount-demo/` | 바인드 마운트 대상. 이미지(`app/site`)와 분리해야 "이미지는 그대로, 호스트 파일만 바꿔도 반영" 됨을 증명할 수 있음 |
+| `practice/` | 터미널·권한 실습 결과물. Docker 와 무관한 파일이라 별도 보관 |
+| `compose/` | 보너스. 필수 결과물(`app/`)을 건드리지 않고 Compose 가 `../app` 을 재사용 |
+| `docs/` | 문서·증거. 실행 코드와 증거 자료를 분리해 저장소 루트를 깔끔하게 유지 |
+
+**증거 파일 목록** — 모든 로그는 `$ 명령` + 출력 원본입니다.
+
+| 파일 | 내용 | README 절 |
+|---|---|---|
+| [02-git.log](docs/logs/02-git.log) | Git 설정, `git config --list` | [6.10](#610-git-설정-및-githubvscode-연동) |
+| [03-terminal.log](docs/logs/03-terminal.log) | 터미널 기본 조작 | [6.1](#61-터미널-기본-조작) |
+| [04-permission.log](docs/logs/04-permission.log) | 권한 변경 실험 | [6.2](#62-권한-실습) |
+| [05-docker-check.log](docs/logs/05-docker-check.log) | `docker --version`, `docker version`, `docker info` 전체 | [6.3](#63-docker-설치-및-점검) |
+| [05b-docker-info.log](docs/logs/05b-docker-info.log) | `docker info` 핵심 필드 | [6.3](#63-docker-설치-및-점검) |
+| [05c-docker-daemon-fail.log](docs/logs/05c-docker-daemon-fail.log) | 데몬 연결 실패 시 출력 비교 | [6.3](#63-docker-설치-및-점검) |
+| [06-docker-basic.log](docs/logs/06-docker-basic.log) | `hello-world` 전체 출력, `pull`, `images`, `ps -a` | [6.4](#64-docker-기본-운영-명령) · [6.5](#65-컨테이너-실행-실습-hello-world--ubuntu) |
+| [07-ubuntu.log](docs/logs/07-ubuntu.log) | ubuntu 진입, exec / attach 관찰 | [6.5](#65-컨테이너-실행-실습-hello-world--ubuntu) |
+| [07b-ubuntu-hostname.log](docs/logs/07b-ubuntu-hostname.log) | 트러블슈팅 #2 해결 확인 | [8 #2](#ts2) |
+| [08-build-run.log](docs/logs/08-build-run.log) | 커스텀 이미지 빌드 · 8080/8081 실행 · curl | [6.6](#66-dockerfile-기반-커스텀-이미지) · [6.7](#67-포트-매핑-및-접속-증거) |
+| [08b-port-detail.log](docs/logs/08b-port-detail.log) | `docker port`, `curl -v`, 인터페이스별 접근 | [6.7](#67-포트-매핑-및-접속-증거) |
+| [09-ops.log](docs/logs/09-ops.log) | `docker logs`, `docker stats` | [6.4](#64-docker-기본-운영-명령) |
+| [10-mount-volume.log](docs/logs/10-mount-volume.log) | 바인드 마운트 · 볼륨 영속성 | [6.8](#68-바인드-마운트-호스트-변경-즉시-반영) · [6.9](#69-docker-볼륨-영속성) |
+| [11-compose-single.log](docs/logs/11-compose-single.log) | Compose 단일 서비스 | [7.1](#71-compose-기초-단일-서비스) |
+| [12-compose-multi.log](docs/logs/12-compose-multi.log) | Compose 멀티 컨테이너 · 통신 | [7.2](#72-compose-멀티-컨테이너--서비스-간-통신) |
+| [13-compose-env.log](docs/logs/13-compose-env.log) | 환경 변수로 포트/모드 변경 | [7.4](#74-환경-변수로-포트모드-변경) |
+| [14-github-ssh.log](docs/logs/14-github-ssh.log) | 저장소 생성 · SSH 인증 · push | [7.5](#75-github-ssh-키) |
+| [15-port-conflict.log](docs/logs/15-port-conflict.log) | 포트 충돌 진단(`lsof`/`netstat`) · 해제(`kill`) | [6.11](#611-포트-충돌-진단-및-해결) |
+| [16-volume-backup.log](docs/logs/16-volume-backup.log) | 볼륨 백업(tar) · 복원 · 무결성 확인 | [6.9](#69-docker-볼륨-영속성) |
+| [17-rebuild-cleanup.log](docs/logs/17-rebuild-cleanup.log) | `--no-cache` 재빌드, `rm`/`rmi`/`prune` 정리 | [6.4](#64-docker-기본-운영-명령) · [6.6](#66-dockerfile-기반-커스텀-이미지) |
+| [browser-8080.png](docs/images/browser-8080.png) · [browser-8081.png](docs/images/browser-8081.png) | 브라우저 접속 (주소창 포함) | [6.7](#67-포트-매핑-및-접속-증거) |
+| [vscode-github-login.png](docs/images/vscode-github-login.png) · [vscode-source-control.png](docs/images/vscode-source-control.png) | VSCode GitHub 로그인 · 저장소 연동 | [6.10](#610-git-설정-및-githubvscode-연동) |
 
 ---
 
@@ -113,6 +151,9 @@ codyssey-e1-1-dev-workstation/
 | 10 | Docker 볼륨 영속성 | ✅ | [6.9](#69-docker-볼륨-영속성) · [log](docs/logs/10-mount-volume.log) |
 | 11 | Git 설정 (`git config --list`) | ✅ | [6.10](#610-git-설정-및-githubvscode-연동) · [log](docs/logs/02-git.log) |
 | 12 | VSCode GitHub 로그인 · 저장소 연동 | ✅ | [6.10](#610-git-설정-및-githubvscode-연동) |
+| 13 | 포트 충돌 진단 (`lsof`/`netstat`) · 해제 (`kill`/대체 포트) | ✅ | [6.11](#611-포트-충돌-진단-및-해결) · [log](docs/logs/15-port-conflict.log) |
+| 14 | 볼륨 백업 / 복원 | ✅ | [6.9](#69-docker-볼륨-영속성) · [log](docs/logs/16-volume-backup.log) |
+| 15 | 이미지/컨테이너 정리 · 캐시 무시 재빌드 | ✅ | [6.4](#64-docker-기본-운영-명령) · [log](docs/logs/17-rebuild-cleanup.log) |
 | B1 | Compose 기초 (단일 서비스) | ✅ | [7.1](#71-compose-기초-단일-서비스) |
 | B2 | Compose 멀티 컨테이너 + 네트워크 통신 | ✅ | [7.2](#72-compose-멀티-컨테이너--서비스-간-통신) |
 | B3 | Compose 운영 명령 (up/down/ps/logs) | ✅ | [7.3](#73-compose-운영-루틴) |
@@ -128,6 +169,10 @@ codyssey-e1-1-dev-workstation/
 ```bash
 git clone https://github.com/ll-0l/codyssey-e1-1-dev-workstation.git
 cd codyssey-e1-1-dev-workstation
+
+# 0) 사용할 호스트 포트가 비어 있는지 먼저 확인 (출력이 없으면 비어 있음)
+for p in 8080 8081 8082 8085 8090; do lsof -nP -iTCP:$p -sTCP:LISTEN; done
+#    → 점유 중이면 6.11 절차대로 정리하거나, 아래 -p 의 왼쪽 숫자를 다른 포트로 변경
 
 # 1) 커스텀 이미지 빌드 → 두 포트로 실행
 docker build -t codyssey-web:1.0 ./app
@@ -154,7 +199,9 @@ docker rm -f web-8080 web-8081 web-bind
 docker volume rm codyssey-data
 ```
 
-> 📌 포트 `8080~8082`, `8085`, `8090` 이 이미 사용 중이면 `-p <다른포트>:80` 또는 `compose/.env` 의 `WEB_PORT` 를 바꿔 실행하세요.
+> 📌 포트 `8080~8082`, `8085`, `8090` 이 이미 사용 중이면 `-p <다른포트>:80` 또는 `compose/.env` 의 `WEB_PORT` 를 바꿔 실행하세요. 진단·해제 절차는 [6.11](#611-포트-충돌-진단-및-해결).
+> 📌 빌드가 이상하게 실패하거나 예전 결과가 나오면 캐시를 무시하고 다시 빌드: `docker build --no-cache --pull -t codyssey-web:1.0 ./app` ([로그](docs/logs/17-rebuild-cleanup.log))
+> 📌 Windows 에서는 `$(pwd)` 대신 PowerShell `${PWD}`, CMD `%cd%` 를 사용합니다. ([9. 경로 OS 차이](#os별-경로-차이))
 
 ---
 
@@ -222,6 +269,19 @@ drwxr-xr-x  7 sin-uilyeong  staff  224 Nov 19 15:12 ..
 ### 6.2 권한 실습
 
 **권한 읽는 법** — `-rwxr-xr-x` = [종류][소유자 rwx][그룹 r-x][기타 r-x], 숫자는 `r=4, w=2, x=1` 의 합 → `755`. ([전체 로그](docs/logs/04-permission.log))
+
+**전/후 한눈에 보기**
+
+| 대상 | 변경 전 | 명령 | 변경 후 | 동작 변화 |
+|---|---|---|---|---|
+| `hello.sh` (파일) | `-rw-r--r--` 644 | `chmod 755` | `-rwxr-xr-x` 755 | `./hello.sh` permission denied → **실행 성공** |
+| `hello.sh` (파일) | `-rwxr-xr-x` 755 | `chmod u-x,go-rx` | `-rw-------` 600 | 소유자만 읽기/쓰기 |
+| `greeting.txt` (파일) | `-rw-r--r--` 644 | `chmod 444` | `-r--r--r--` 444 | 내용 추가 **실패** (w 없음) |
+| `greeting.txt` (파일) | `-r--r--r--` 444 | `chmod 644` | `-rw-r--r--` 644 | 내용 추가 **성공** |
+| `docs/` (디렉토리) | `drwxr-xr-x` 755 | `chmod 555` | `dr-xr-xr-x` 555 | 파일 생성 **실패** |
+| `docs/` (디렉토리) | `dr-xr-xr-x` 555 | `chmod 311` | `d-wx--x--x` 311 | `ls` **실패**, 이름 알면 `cat` 성공 |
+| `docs/` (디렉토리) | `d-wx--x--x` 311 | `chmod 644` | `drw-r--r--` 644 | `cat docs/memo.txt` **실패** (x 없음) |
+| `docs/` (디렉토리) | `drw-r--r--` 644 | `chmod 755` | `drwxr-xr-x` 755 | 모두 정상 |
 
 #### (1) 파일: `hello.sh` 실행 권한 644 → 755 → 600 → 644
 
@@ -318,6 +378,31 @@ Docker Root Dir: /var/lib/docker
 ```
 
 > `docker version` 의 **Server** 항목과 `docker info` 가 정상 출력되면 CLI(클라이언트)가 데몬(서버)과 통신 중이라는 뜻입니다. 데몬이 꺼져 있으면 `Cannot connect to the Docker daemon` 에러가 납니다.
+> `docker info` 전체 원본: [05-docker-check.log](docs/logs/05-docker-check.log) · 핵심 필드: [05b-docker-info.log](docs/logs/05b-docker-info.log)
+
+**비교 — 데몬에 연결할 수 없을 때** ([로그](docs/logs/05c-docker-daemon-fail.log))
+Docker Desktop 을 끄지 않고, CLI 가 존재하지 않는 소켓을 바라보게 해서 "데몬 꺼짐" 상황을 재현했습니다.
+
+```bash
+$ docker context ls
+NAME              DESCRIPTION                               DOCKER ENDPOINT
+default           Current DOCKER_HOST based configuration   unix:///var/run/docker.sock
+desktop-linux *   Docker Desktop                            unix:///Users/sin-uilyeong/.docker/run/docker.sock
+
+$ DOCKER_HOST=unix:///tmp/no-docker.sock docker info --format 'Server Version: {{.ServerVersion}}'; echo "exit code: $?"
+Server Version:
+Cannot connect to the Docker daemon at unix:///tmp/no-docker.sock. Is the docker daemon running?
+exit code: 1
+
+$ DOCKER_HOST=unix:///tmp/no-docker.sock docker version 2>&1 | grep -E "^Client|^Server|Cannot"
+Client:
+Cannot connect to the Docker daemon at unix:///tmp/no-docker.sock. Is the docker daemon running?
+```
+
+| 상태 | `docker version` | `docker info` | 조치 |
+|---|---|---|---|
+| 정상 | Client + **Server** 둘 다 출력 | Server Version 출력, exit 0 | – |
+| 데몬 꺼짐/연결 불가 | **Client 만** 출력 | `Cannot connect ...`, exit 1 | Docker Desktop(또는 OrbStack) 실행, `docker context ls` 로 엔드포인트 확인 |
 
 ### 6.4 Docker 기본 운영 명령
 
@@ -356,9 +441,46 @@ $ docker start ubuntu-lab     # 중지된 컨테이너 재시작
 $ docker stop ubuntu-lab      # 실행 중 컨테이너 중지
 ```
 
+**정리 (rm / rmi / prune)** ([로그](docs/logs/17-rebuild-cleanup.log))
+
+```bash
+$ docker system df                                     # 정리 전 사용량
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          5         2         202.9MB   84.73MB (41%)
+Containers      4         1         110.6kB   28.67kB (25%)
+
+$ docker rm ubuntu-it ubuntu-lab                       # 종료된 컨테이너 삭제
+ubuntu-it
+ubuntu-lab
+
+$ docker rmi hello-world                               # 이미지를 쓰는 컨테이너가 남아 있으면 삭제 거부
+Error response from daemon: conflict: unable to delete hello-world:latest (must be forced) - container 6b7e1e81ed98 is using its referenced image 1e4c05b897a7
+
+$ docker ps -a --filter ancestor=hello-world --format '{{.Names}} {{.Status}}'
+quizzical_turing Exited (0) 27 hours ago               # 원인: 이름 없이 실행했던 hello-world 컨테이너
+$ docker rm $(docker ps -aq --filter ancestor=hello-world)
+6b7e1e81ed98
+
+$ docker rmi hello-world                               # 컨테이너를 먼저 지우니 성공
+Untagged: hello-world:latest
+Deleted: sha256:1e4c05b897a751332ce85c7e9449da2d93514ea2dea6dbb0e2753c9e949b2bfa
+
+$ docker image prune -f                                # 태그 없는(dangling) 이미지 정리
+Total reclaimed space: 0B
+
+$ docker system df                                     # 정리 후
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          4         0         202.8MB   202.8MB (100%)
+Containers      1         1         81.92kB   0B (0%)
+```
+
+> **관찰**: 이미지는 컨테이너의 "설계도" 라서, 그 이미지로 만든 컨테이너가 (종료 상태라도) 남아 있으면 `rmi` 가 거부됩니다. 정리 순서는 **컨테이너 → 이미지**.
+
 ### 6.5 컨테이너 실행 실습 (hello-world / ubuntu)
 
 #### hello-world
+
+([전체 출력 로그](docs/logs/06-docker-basic.log))
 
 ```bash
 $ docker run hello-world
@@ -476,6 +598,28 @@ $ docker exec web-8080 printenv APP_ENV
 dev
 ```
 
+**빌드가 실패하거나 변경이 반영되지 않을 때** ([로그](docs/logs/17-rebuild-cleanup.log))
+
+```bash
+# 일반 빌드: 바뀐 것이 없으면 레이어를 캐시에서 재사용
+$ docker build -t codyssey-web:1.0 ./app
+#7 CACHED
+#8 CACHED
+
+# --no-cache: 내 Dockerfile 단계(COPY 등)를 전부 다시 실행 / --pull: 베이스 이미지 최신본 다시 확인
+$ docker build --no-cache --pull -t codyssey-web:1.0 ./app
+#6 [2/3] COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+#6 DONE 0.0s
+#7 [3/3] COPY site/ /usr/share/nginx/html/
+#7 DONE 0.0s
+```
+
+| 증상 | 확인 | 조치 |
+|---|---|---|
+| `COPY failed: file not found` | 빌드 컨텍스트 경로 (`./app`) 와 Dockerfile 안 상대 경로 | `docker build ... ./app` 처럼 컨텍스트를 `app/` 로 지정 |
+| 소스를 고쳤는데 결과가 그대로 | `CACHED` 가 찍히는지, 컨테이너를 새 이미지로 다시 만들었는지 | `--no-cache` 재빌드 후 `docker rm -f` → `docker run` |
+| 베이스 이미지 pull 실패 | `docker info` 로 데몬/네트워크 확인 | 네트워크 확인 후 `docker pull nginx:alpine` 재시도 |
+
 ### 6.7 포트 매핑 및 접속 증거
 
 `-p <호스트포트>:<컨테이너포트>` — 같은 이미지(컨테이너 내부는 둘 다 80)를 호스트의 **8080, 8081** 두 포트로 연결했습니다.
@@ -503,6 +647,34 @@ X-Served-By: 775dd0cdf020           # web-8081 컨테이너 ID (다른 컨테이
 $ curl -s http://localhost:8081/health
 ok
 ```
+
+**상세 확인 — `curl -v` 와 인터페이스별 접근** ([로그](docs/logs/08b-port-detail.log))
+
+```bash
+$ curl -v http://localhost:8080/health
+* Connected to localhost (::1) port 8080
+> GET /health HTTP/1.1
+> Host: localhost:8080
+< HTTP/1.1 200 OK
+< Server: nginx
+< X-Served-By: f579885883e1
+ok
+
+# 0.0.0.0 으로 바인딩 → Mac 의 LAN IP 로도 접속됨 (같은 네트워크의 다른 기기에서 접근 가능)
+$ curl -s http://<LAN-IP>:8080/health
+ok
+
+# 127.0.0.1 로만 바인딩하면 → 내 PC 에서만 접근 가능
+$ docker run -d -p 127.0.0.1:8084:80 --name web-local codyssey-web:1.0
+$ docker port web-local
+80/tcp -> 127.0.0.1:8084
+$ curl -s http://127.0.0.1:8084/health
+ok
+$ curl -s -m 3 http://<LAN-IP>:8084/health || echo "LAN-IP 접근 실패 (expected)"
+LAN-IP 접근 실패 (expected)
+```
+
+> LAN IP 는 개인 네트워크 정보라 `<LAN-IP>` 로 마스킹했습니다.
 
 **브라우저 접속 (주소창 포함)**
 
@@ -597,6 +769,38 @@ $ docker exec novol-test bash -lc 'cat /tmp/temp.txt'
 cat: /tmp/temp.txt: No such file or directory        # 컨테이너와 함께 사라짐
 ```
 
+**볼륨 백업 / 복원** ([로그](docs/logs/16-volume-backup.log))
+
+볼륨은 컨테이너 삭제에는 안전하지만, `docker volume rm` 이나 Docker 재설치에는 사라집니다. 그래서 **임시 컨테이너 하나가 볼륨과 호스트 폴더를 동시에 마운트**해 `tar` 로 묶어 호스트로 꺼냈습니다.
+
+```text
+ [볼륨 codyssey-data] ──/data(ro)──► [임시 ubuntu 컨테이너: tar czf] ──/backup──► [호스트 ./backups/codyssey-data.tar.gz]
+ [호스트 ./backups/...tar.gz] ──/backup(ro)──► [임시 ubuntu 컨테이너: tar xzf] ──/data──► [새 볼륨 codyssey-data-restored]
+```
+
+```bash
+# 1) 백업: 볼륨은 읽기 전용(:ro)으로 연결해 원본 보호
+$ docker run --rm -v codyssey-data:/data:ro -v "$(pwd)/backups":/backup ubuntu:22.04 \
+    tar czf /backup/codyssey-data.tar.gz -C /data .
+$ tar tzvf backups/codyssey-data.tar.gz
+drwxr-xr-x  0 root   root        0 Nov 19 15:15 ./
+-rw-r--r--  0 root   root       52 Nov 19 15:15 ./hello.txt
+
+# 2) 복원: 새 볼륨을 만들고 압축 해제
+$ docker volume create codyssey-data-restored
+$ docker run --rm -v codyssey-data-restored:/data -v "$(pwd)/backups":/backup:ro ubuntu:22.04 \
+    tar xzf /backup/codyssey-data.tar.gz -C /data
+
+# 3) 검증: 내용 + 해시 비교
+$ docker run --rm -v codyssey-data-restored:/data ubuntu:22.04 cat /data/hello.txt
+persisted at 2026-11-19T06:15:07Z from dcdaa81d579c
+$ diff <(docker run --rm -v codyssey-data:/data ubuntu:22.04 sha256sum /data/hello.txt) \
+       <(docker run --rm -v codyssey-data-restored:/data ubuntu:22.04 sha256sum /data/hello.txt) && echo '원본 = 복원본 (sha256 일치)'
+원본 = 복원본 (sha256 일치)
+```
+
+> 백업 파일(`backups/`)은 데이터 자체이므로 `.gitignore` 로 저장소에서 제외했습니다. 실제 서비스에서는 DB 를 멈추거나 DB 전용 덤프 도구(`pg_dump` 등)를 쓰는 것이 안전합니다.
+
 ### 6.10 Git 설정 및 GitHub/VSCode 연동
 
 ([전체 로그](docs/logs/02-git.log))
@@ -630,6 +834,89 @@ file:.git/config	remote.origin.url=git@github.com:ll-0l/codyssey-e1-1-dev-workst
 | VSCode 계정 (GitHub 로그인) | Source Control (원격 저장소 연동) |
 |---|---|
 | ![VSCode GitHub 로그인](docs/images/vscode-github-login.png) | ![VSCode 저장소 연동](docs/images/vscode-source-control.png) |
+
+### 6.11 포트 충돌 진단 및 해결
+
+`port is already allocated` / `address already in use` 가 나왔을 때 **누가 포트를 쓰는지 찾고 → 비우거나 피하는** 절차입니다. 두 상황을 직접 재현했습니다. ([전체 로그](docs/logs/15-port-conflict.log))
+
+**진단 순서 (요약)**
+
+| 단계 | 명령 | 확인 내용 |
+|---|---|---|
+| ① 점유 프로세스 찾기 | `lsof -nP -iTCP:<포트> -sTCP:LISTEN` | COMMAND, **PID** (Docker 면 `com.docker.backend`) |
+| ② 교차 확인 | `netstat -anv -p tcp \| grep '\.<포트> '` (Linux: `ss -ltnp \| grep :<포트>`) | LISTEN 상태, pid |
+| ③ Docker 컨테이너인지 | `docker ps --filter publish=<포트>` | 포트를 잡은 **컨테이너 이름** |
+| ④-a 컨테이너면 | `docker rm -f <이름>` 또는 `-p <다른포트>:80` | 정리 or 대체 포트 |
+| ④-b 일반 프로세스면 | `ps -p <PID> -o pid,command` → `kill <PID>` (응답 없으면 `kill -9`) | 무엇인지 확인한 뒤 종료 |
+| ⑤ 해제 확인 | `lsof -nP -iTCP:<포트> -sTCP:LISTEN` | 출력 없음 = 비어 있음 |
+
+#### 상황 A — 다른 컨테이너가 8080 을 이미 사용
+
+```bash
+$ docker run -d -p 8080:80 --name web-8080 codyssey-web:1.0
+$ docker run -d -p 8080:80 --name web-dup codyssey-web:1.0
+docker: Error response from daemon: ... Bind for 0.0.0.0:8080 failed: port is already allocated
+
+# ① 누가 8080 을 LISTEN 중인가
+$ lsof -nP -iTCP:8080 -sTCP:LISTEN
+COMMAND    PID         USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+com.docke 1722 sin-uilyeong  154u  IPv6 0x1c711d508a84f905      0t0  TCP *:8080 (LISTEN)
+
+# ② netstat 으로 교차 확인 (pid 1722 동일)
+$ netstat -anv -p tcp | grep -E 'Proto|\.8080 ' | grep -E 'Proto|LISTEN'
+Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)     rhiwat shiwat    pid
+tcp46      0      0  *.8080                 *.*                    LISTEN      131072 131072   1722
+
+# ③ Docker 프로세스이므로 어떤 컨테이너인지 확인
+$ docker ps --filter publish=8080 --format 'table {{.Names}}\t{{.Ports}}'
+NAMES      PORTS
+web-8080   0.0.0.0:8080->80/tcp
+
+# ④-a 해결 1: 대체 포트 (기존 서비스 유지)
+$ docker rm web-dup                          # 실패하며 'Created' 상태로 남은 컨테이너 정리
+$ docker run -d -p 8083:80 --name web-dup codyssey-web:1.0
+$ curl -s http://localhost:8083/health
+ok
+
+# ④-a 해결 2: 점유 컨테이너 정리 후 원래 포트 사용
+$ docker rm -f web-dup web-8080
+$ lsof -nP -iTCP:8080 -sTCP:LISTEN || echo '8080 비어 있음'
+8080 비어 있음
+$ docker run -d -p 8080:80 --name web-8080 codyssey-web:1.0
+$ curl -s http://localhost:8080/health
+ok
+```
+
+#### 상황 B — Docker 가 아닌 일반 프로세스가 8099 를 사용
+
+```bash
+$ python3 -m http.server 8099 &                 # 다른 프로그램이 포트를 잡은 상황 재현
+$ docker run -d -p 8099:80 --name web-8099 codyssey-web:1.0
+docker: Error response from daemon: Ports are not available: exposing port TCP 0.0.0.0:8099 -> 127.0.0.1:0: listen tcp 0.0.0.0:8099: bind: address already in use
+
+$ lsof -nP -iTCP:8099 -sTCP:LISTEN
+COMMAND   PID         USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+Python  15534 sin-uilyeong    5u  IPv6 0x1c711d508a84c105      0t0  TCP *:8099 (LISTEN)
+
+$ ps -p 15534 -o pid,command                   # 종료해도 되는 프로세스인지 먼저 확인
+  PID COMMAND
+15534 .../Python -m http.server 8099
+
+$ kill 15534                                    # SIGTERM (정상 종료 요청)
+$ lsof -nP -iTCP:8099 -sTCP:LISTEN || echo '8099 비어 있음'
+8099 비어 있음
+
+$ docker rm web-8099                            # 실패한 컨테이너 정리 후 재실행
+$ docker run -d -p 8099:80 --name web-8099 codyssey-web:1.0
+$ curl -s http://localhost:8099/health
+ok
+```
+
+> ⚠️ **주의**
+> - Docker 컨테이너가 점유한 경우 `lsof` 에는 `com.docker.backend` 가 보입니다. 이 PID 를 `kill` 하면 **Docker Desktop 전체가 멈추므로**, 반드시 ③ `docker ps --filter publish=` 로 컨테이너를 찾아 `docker rm -f` 로 정리합니다.
+> - `kill -9` (SIGKILL) 은 정리 작업 없이 강제 종료하므로 `kill` (SIGTERM) 이 안 먹힐 때만 사용합니다.
+> - 다른 사람의 프로세스나 시스템 프로세스는 `sudo` 가 필요할 수 있으며, 그 경우 종료 대신 **대체 포트** 를 쓰는 편이 안전합니다.
+> - 포트 바인딩에 실패한 `docker run` 은 컨테이너를 `Created` 상태로 남기므로 같은 이름으로 다시 만들기 전에 `docker rm` 이 필요합니다.
 
 ---
 
@@ -830,11 +1117,16 @@ $ git remote -v                                   # HTTPS 가 아닌 SSH 주소
 origin	git@github.com:ll-0l/codyssey-e1-1-dev-workstation.git (fetch)
 origin	git@github.com:ll-0l/codyssey-e1-1-dev-workstation.git (push)
 
+$ git log --oneline -1                           # push 할 커밋
+c9373a5 docs: E1-1 개발 워크스테이션 구축 결과물 및 기술 문서
+
 $ git push -u origin main
 To github.com:ll-0l/codyssey-e1-1-dev-workstation.git
  * [new branch]      main -> main
 branch 'main' set up to track 'origin/main'.
 ```
+
+> 첫 push 커밋 [`c9373a5`](https://github.com/ll-0l/codyssey-e1-1-dev-workstation/commit/c9373a5) 이후의 모든 커밋도 같은 SSH remote 로 push 했습니다. → [커밋 이력](https://github.com/ll-0l/codyssey-e1-1-dev-workstation/commits/main)
 
 | 방식 | 인증 수단 | 특징 |
 |---|---|---|
@@ -856,6 +1148,7 @@ branch 'main' set up to track 'origin/main'.
 | **원인 가설** | 최신 OrbStack 의 최소 지원 macOS 버전이 12 보다 높다 |
 | **확인** | 설치 파일의 `Info.plist` 에서 최소 OS 버전 확인 → `LSMinimumSystemVersion = 14.0` |
 | **해결/대안** | Monterey 를 지원하는 마지막 **Docker Desktop 4.41.2** 설치 (4.42 부터 macOS 13.3+ 필요). 서명(Team ID `9BNSXJN65R`, Docker Inc.) 확인 후 설치. **자동 업데이트를 끔** (업데이트 시 실행 불가 버전으로 올라가는 것 방지) |
+| **증거** | 설치 후 버전·데몬 확인: [05-docker-check.log](docs/logs/05-docker-check.log) · [6.3](#63-docker-설치-및-점검) |
 
 ```bash
 $ curl -sSL -o OrbStack.dmg https://orbstack.dev/download/stable/latest/amd64
@@ -868,6 +1161,7 @@ $ codesign -dv ./mnt/Docker.app 2>&1 | grep TeamIdentifier      # Docker Desktop
 TeamIdentifier=9BNSXJN65R
 ```
 
+<a id="ts2"></a>
 ### #2 `docker exec` 결과에 컨테이너가 아니라 Mac 의 hostname 이 출력됨
 
 | 단계 | 내용 |
@@ -876,6 +1170,7 @@ TeamIdentifier=9BNSXJN65R
 | **원인 가설** | `$(hostname)` 이 컨테이너에 전달되기 **전에** 호스트 셸(zsh)에서 먼저 치환되었다 |
 | **확인** | 큰따옴표 안의 `$( )` 는 호스트 셸이 해석함. 출력값이 Mac 이름과 동일 |
 | **해결** | 명령 전체를 **작은따옴표** 로 감싸 컨테이너 안의 `sh -c` 가 해석하도록 변경 |
+| **증거** | 문제 발생: [07-ubuntu.log](docs/logs/07-ubuntu.log) (`exec works: <Mac 이름>`) → 해결 확인: [07b-ubuntu-hostname.log](docs/logs/07b-ubuntu-hostname.log) |
 
 ```bash
 # ❌ 호스트에서 치환됨
@@ -895,12 +1190,24 @@ exec works: 5506f113455a
 | **원인 가설** | PID 1 로 실행된 `bash` 가 `SIGTERM` 을 무시 → 10초 유예 후 `SIGKILL` 로 강제 종료 (137 = 128 + 9(SIGKILL)) |
 | **확인** | 리눅스에서 PID 1 은 시그널 핸들러가 없으면 기본 동작(종료)이 적용되지 않음. `docker ps -a` 에서 `Exited (137)` 확인 |
 | **해결/대안** | 테스트용 컨테이너는 `docker stop -t 1` 로 유예 시간 단축. 실제 서비스는 시그널을 처리하는 프로세스(nginx 등)를 PID 1 로 두거나 `docker run --init` 사용 |
+| **증거** | 137 종료: [07-ubuntu.log](docs/logs/07-ubuntu.log) (`docker stop ubuntu-lab`) · `-t 1` 적용: [07b-ubuntu-hostname.log](docs/logs/07b-ubuntu-hostname.log) |
 
 ```bash
 $ docker stop ubuntu-lab
 $ docker ps -a --filter name=ubuntu
 5506f113455a   ubuntu:22.04   "bash"   11 seconds ago   Exited (137) Less than a second ago   ubuntu-lab
 ```
+
+<a id="ts4"></a>
+### #4 같은 포트로 컨테이너를 하나 더 띄우자 `port is already allocated`
+
+| 단계 | 내용 |
+|---|---|
+| **문제** | `docker run -p 8080:80 --name web-dup ...` 실행 시 `Bind for 0.0.0.0:8080 failed: port is already allocated` |
+| **원인 가설** | 호스트의 8080 을 다른 프로세스(또는 컨테이너)가 이미 LISTEN 중 |
+| **확인** | `lsof -nP -iTCP:8080 -sTCP:LISTEN` → `com.docker.backend` (PID 1722), `netstat -anv` 로 동일 PID 확인, `docker ps --filter publish=8080` → `web-8080` 이 점유 |
+| **해결/대안** | 기존 서비스를 유지할 땐 **대체 포트** `-p 8083:80`, 필요 없으면 `docker rm -f web-8080` 후 재실행. Docker 가 아닌 프로세스가 점유한 경우 `ps -p <PID>` 로 확인 후 `kill <PID>` |
+| **증거** | [15-port-conflict.log](docs/logs/15-port-conflict.log) · [6.11](#611-포트-충돌-진단-및-해결) |
 
 ---
 
@@ -913,21 +1220,93 @@ $ docker ps -a --filter name=ubuntu
   `practice/backup` 에서 `cat ../docs/memo.txt` → 같은 파일
 - 실무 팁: 스크립트/문서에는 PC 마다 다른 절대 경로를 하드코딩하지 말고 `$(pwd)` 나 상대 경로를 사용 (이 README 의 바인드 마운트 예시)
 
+<a id="os별-경로-차이"></a>
+#### OS별 경로 차이
+
+| | macOS / Linux | Windows (PowerShell / CMD) |
+|---|---|---|
+| 절대 경로 예 | `/Users/me/project` , `/home/me/project` | `C:\Users\me\project` |
+| 구분자 | `/` | `\` (PowerShell 은 `/` 도 허용) |
+| 홈 디렉토리 | `~` , `$HOME` | `$HOME` / `%USERPROFILE%` |
+| 현재 위치 | `$(pwd)` | PowerShell `${PWD}` , CMD `%cd%` |
+| 대소문자 | Linux 는 구분, macOS 기본은 구분 안 함 | 구분 안 함 |
+| 바인드 마운트 | `-v "$(pwd)/mount-demo":/usr/share/nginx/html` | `-v "${PWD}/mount-demo:/usr/share/nginx/html"` |
+
+- **컨테이너 안쪽 경로는 OS 와 무관하게 항상 리눅스 형식**(`/usr/share/nginx/html`)입니다. 바뀌는 건 콜론 왼쪽의 호스트 경로뿐입니다.
+- 경로에 공백이 있으면(이 저장소의 `Codyssey all-in-one Pre-course` 처럼) 반드시 따옴표로 감쌉니다.
+- WSL2 를 쓰면 리눅스 경로(`/home/...`)에 프로젝트를 두는 편이 파일 I/O 와 변경 감지가 빠릅니다.
+
 ### 파일 권한 r/w/x 와 755 / 644
 - 3자리 숫자 = **소유자 / 그룹 / 기타**, 각 자리는 `r(4) + w(2) + x(1)` 의 합
 - `755` = `rwx`(7) `r-x`(5) `r-x`(5) → 소유자만 수정, 모두 읽기·실행 (스크립트, 디렉토리)
 - `644` = `rw-`(6) `r--`(4) `r--`(4) → 소유자만 수정, 모두 읽기 (일반 파일)
 - 디렉토리에서는 r=목록, w=생성/삭제, x=진입/접근 ([6.2 표](#62-권한-실습) 참고)
 
+#### 특수 권한 비트 (4자리 표기의 맨 앞자리)
+
+| 비트 | 숫자 | 표시 위치 | 의미 | 이 Mac 에서 확인한 예 |
+|---|---|---|---|---|
+| **setuid** | `4000` | 소유자 x 자리 → `s` | 실행하는 사람과 무관하게 **파일 소유자 권한**으로 실행 | `-r-s--x--x root /usr/bin/sudo` |
+| **setgid** | `2000` | 그룹 x 자리 → `s` | 파일: **소유 그룹 권한**으로 실행 / 디렉토리: 안에 생기는 파일이 디렉토리 그룹을 상속 | `-rwxr-sr-x root _postdrop /usr/sbin/postdrop` |
+| **sticky** | `1000` | 기타 x 자리 → `t` | 누구나 쓸 수 있는 디렉토리에서 **자기 파일만 삭제** 가능 | `drwxrwxrwt root /private/tmp` |
+
+```bash
+$ ls -l /usr/bin/sudo /usr/bin/login
+-r-sr-xr-x  1 root  wheel   172000 Jul 17  2024 /usr/bin/login
+-r-s--x--x  1 root  wheel  1461920 Jul 17  2024 /usr/bin/sudo
+$ ls -l /usr/sbin/postdrop
+-rwxr-sr-x  1 root  _postdrop  602144 Jul 17  2024 /usr/sbin/postdrop
+$ ls -ld /private/tmp
+drwxrwxrwt  39 root  wheel  1248 Nov 20 18:29 /private/tmp
+```
+
+- 예: `chmod 4755 file` → `-rwsr-xr-x`, `chmod 1777 dir` → `drwxrwxrwt`
+- 대문자 `S`/`T` 는 특수 비트는 켜졌는데 해당 x 권한이 없는 상태입니다.
+- setuid 는 권한 상승 경로가 될 수 있어 보안 점검 대상입니다 (`find / -perm -4000` 으로 목록 확인).
+
 ### 기존 Dockerfile 기반 커스텀 이미지
 - `FROM` 으로 검증된 베이스(`nginx:alpine`)를 그대로 가져오고, **바꾸고 싶은 부분만 레이어로 덧씌움** (`COPY` 설정/콘텐츠, `ENV`, `LABEL`, `HEALTHCHECK`)
 - 베이스가 하는 일(nginx 설치·실행)을 다시 만들 필요가 없고, 내 변경점만 Dockerfile 에 명확히 남음
+
+#### 이미지 빌드 vs 컨테이너 실행
+
+| 관점 | 이미지 (`docker build`) | 컨테이너 (`docker run`) |
+|---|---|---|
+| 정체 | 읽기 전용 **레이어 묶음** (설계도) | 이미지 레이어 + **쓰기 가능한 레이어 1장** (실행 인스턴스) |
+| 만들어지는 시점 | 빌드할 때 1번 | 실행할 때마다 새로 |
+| 변경 | **불변**. 바꾸려면 Dockerfile 수정 → 재빌드 → 새 이미지 ID | 실행 중 파일 변경 가능, 단 **컨테이너 삭제 시 사라짐** |
+| 개수 관계 | 1개 | 같은 이미지로 N개 (`web-8080`, `web-8081`) |
+| 식별 | `codyssey-web:1.0` (태그) / IMAGE ID | 이름 (`web-8080`) / CONTAINER ID |
+| 확인 명령 | `docker images`, `docker image inspect`, `docker history` | `docker ps -a`, `docker inspect`, `docker logs` |
+| 삭제 | `docker rmi` (사용 중인 컨테이너가 있으면 거부, [6.4](#64-docker-기본-운영-명령)) | `docker rm` |
+
+- 실습 근거: `--no-cache` 재빌드 후 이미지 ID 가 `faca3eb4f6dd` 로 새로 생겼지만, 이미 실행 중이던 `web-8080` 은 **이전 이미지(4540c71ee18e)를 계속 사용** → 이미지를 바꿔도 컨테이너는 다시 만들어야 반영됨 ([로그](docs/logs/17-rebuild-cleanup.log))
+- 컨테이너 안에서 바꾼 내용이 사라지는 것: [6.9 대조 실험](#69-docker-볼륨-영속성)
 
 ### 포트 매핑이 필요한 이유
 - 컨테이너는 **격리된 네트워크** 를 갖기 때문에, 컨테이너의 80 포트는 호스트에서 바로 보이지 않음
 - `-p 8080:80` 은 "호스트 8080 으로 들어온 요청을 컨테이너 80 으로 전달" 하는 연결 규칙
 - 그래서 **같은 이미지(내부 80)를 여러 개 띄워도 호스트 포트만 다르게** 주면 충돌 없이 동시에 실행 가능 (8080/8081 실습)
 - 반대로 공개할 필요가 없는 서비스(api)는 매핑하지 않아 외부 노출을 줄임 (7.2)
+
+```text
+                     호스트 (macOS)                                  컨테이너 (각자 별도 네트워크 네임스페이스)
+ 브라우저/curl ──► 0.0.0.0:8080 ─┐                               ┌─► web-8080  eth0:80  (nginx)
+                                 ├─ Docker 포트 포워딩 (-p) ─────┤
+ 브라우저/curl ──► 0.0.0.0:8081 ─┘                               └─► web-8081  eth0:80  (nginx)
+                    127.0.0.1:8084 ──────────────────────────────────► web-local eth0:80  (내 PC 에서만 접근)
+                   (매핑 없음) ✕ ─────────────────────────────────────  api       :5000    (Compose 내부망 전용)
+```
+
+```bash
+$ docker port web-8080                 # 매핑 규칙 확인
+80/tcp -> 0.0.0.0:8080
+$ docker port web-local
+80/tcp -> 127.0.0.1:8084               # 바인딩 IP 까지 지정 가능 → 접근 범위 제한
+```
+
+- `0.0.0.0` = 호스트의 **모든 네트워크 인터페이스**에서 받음 (LAN 의 다른 기기도 접근 가능), `127.0.0.1` = **내 PC 에서만** ([6.7 상세 확인](#67-포트-매핑-및-접속-증거))
+- 포트가 이미 사용 중일 때의 진단은 [6.11](#611-포트-충돌-진단-및-해결)
 
 ### Docker 볼륨 (영속 데이터)
 - 컨테이너의 쓰기 레이어는 **컨테이너와 수명이 같아서** 삭제하면 데이터도 사라짐 (6.9 대조 실험)
@@ -959,6 +1338,10 @@ $ docker ps -a --filter name=ubuntu
 | 포트 매핑 | `docker port`, `curl -i`, 브라우저 | 200 OK, 포트별 다른 `X-Served-By` | [6.7](#67-포트-매핑-및-접속-증거) |
 | 바인드 마운트 | `sed` 수정 후 `curl` | v1 → v2 즉시 반영, `:ro` 쓰기 거부 | [6.8](#68-바인드-마운트-호스트-변경-즉시-반영) |
 | 볼륨 영속성 | `rm -f` 후 새 컨테이너에서 `cat` | 이전 컨테이너가 쓴 내용 유지 | [6.9](#69-docker-볼륨-영속성) |
+| 볼륨 백업/복원 | `tar czf` 백업 → 새 볼륨에 `tar xzf` → `sha256sum` 비교 | 원본 = 복원본 | [6.9](#69-docker-볼륨-영속성) |
+| 포트 충돌 | `lsof -iTCP:<포트> -sTCP:LISTEN`, `netstat -anv`, `docker ps --filter publish=` | 점유 PID/컨테이너 식별 → `kill`/`rm -f` 후 비어 있음 | [6.11](#611-포트-충돌-진단-및-해결) |
+| 데몬 연결 실패 | `DOCKER_HOST=<없는 소켓> docker info` | `Cannot connect ...`, exit 1 | [6.3](#63-docker-설치-및-점검) |
+| 정리 | `docker rm`, `rmi`, `image prune`, `system df` | 컨테이너 → 이미지 순서, 사용량 감소 | [6.4](#64-docker-기본-운영-명령) |
 | Git 설정 | `git config --list --show-origin` | user.name/email, defaultbranch=main | [6.10](#610-git-설정-및-githubvscode-연동) |
 | 서비스 간 통신 | `compose exec web wget http://api:5000` | api JSON 응답 | [7.2](#72-compose-멀티-컨테이너--서비스-간-통신) |
 | 환경 변수 | `VAR=... docker compose up` + `printenv` | port 7000, mode prod | [7.4](#74-환경-변수로-포트모드-변경) |

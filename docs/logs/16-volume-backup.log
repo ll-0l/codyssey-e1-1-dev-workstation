@@ -1,0 +1,43 @@
+# 16. 볼륨 백업 / 복원 (2026-11-20 18:29:19 KST)
+
+## 1) 백업 대상 확인 (6.9 에서 만든 codyssey-data)
+
+$ docker run --rm -v codyssey-data:/data ubuntu:22.04 ls -l /data
+total 4
+-rw-r--r-- 1 root root 52 Nov 19 06:15 hello.txt
+
+$ docker run --rm -v codyssey-data:/data ubuntu:22.04 cat /data/hello.txt
+persisted at 2026-11-19T06:15:07Z from dcdaa81d579c
+
+## 2) 백업: 임시 컨테이너가 볼륨(/data)과 호스트 폴더(/backup)를 동시에 마운트하고 tar 로 묶음
+
+$ docker run --rm -v codyssey-data:/data:ro -v "$(pwd)/backups":/backup ubuntu:22.04 tar czf /backup/codyssey-data.tar.gz -C /data .
+
+$ ls -l backups/
+total 8
+-rw-r--r--  1 sin-uilyeong  staff  195 Nov 20 18:29 codyssey-data.tar.gz
+
+$ tar tzvf backups/codyssey-data.tar.gz
+drwxr-xr-x  0 root   root        0 Nov 19 15:15 ./
+-rw-r--r--  0 root   root       52 Nov 19 15:15 ./hello.txt
+
+## 3) 복원: 새 볼륨을 만들고 tar 를 풀어 넣음
+
+$ docker volume create codyssey-data-restored
+codyssey-data-restored
+
+$ docker run --rm -v codyssey-data-restored:/data -v "$(pwd)/backups":/backup:ro ubuntu:22.04 tar xzf /backup/codyssey-data.tar.gz -C /data
+
+## 4) 검증: 복원된 볼륨에 원본과 같은 내용이 있는지
+
+$ docker run --rm -v codyssey-data-restored:/data ubuntu:22.04 cat /data/hello.txt
+persisted at 2026-11-19T06:15:07Z from dcdaa81d579c
+
+$ diff <(docker run --rm -v codyssey-data:/data ubuntu:22.04 sha256sum /data/hello.txt) <(docker run --rm -v codyssey-data-restored:/data ubuntu:22.04 sha256sum /data/hello.txt) && echo '원본 = 복원본 (sha256 일치)'
+원본 = 복원본 (sha256 일치)
+
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     codyssey-data
+local     codyssey-data-restored
+

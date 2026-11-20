@@ -1,0 +1,60 @@
+# 08b. 포트 매핑 상세 확인 (2026-11-20 18:30:11 KST)
+
+$ docker port web-8080
+80/tcp -> 0.0.0.0:8080
+
+$ curl -v http://localhost:8080/health
+* Host localhost:8080 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying [::1]:8080...
+* Connected to localhost (::1) port 8080
+> GET /health HTTP/1.1
+> Host: localhost:8080
+> User-Agent: curl/8.7.1
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Server: nginx
+< Date: Fri, 20 Nov 2026 09:30:11 GMT
+< Content-Type: text/plain
+< Content-Length: 3
+< Connection: keep-alive
+< X-Served-By: f579885883e1
+< 
+{ [3 bytes data]
+100     3  100     3    0     0   1065      0 --:--:-- --:--:-- --:--:--  1500
+* Connection #0 to host localhost left intact
+ok
+
+$ curl -s http://127.0.0.1:8080/health
+ok
+
+## 다른 네트워크 인터페이스(Mac 의 LAN IP)로 접속 - 0.0.0.0 바인딩이라 같은 네트워크의 다른 기기에서도 접근 가능 (IP 는 마스킹)
+
+$ curl -s http://<LAN-IP>:8080/health
+ok
+
+$ curl -s http://<LAN-IP>:8081/health
+ok
+
+## 127.0.0.1 로만 바인딩하면 외부 인터페이스에서는 접근 불가
+
+$ docker run -d -p 127.0.0.1:8084:80 --name web-local codyssey-web:1.0 && sleep 2
+133656bbec0559a0399b457856f5850b898de8ee5bc9f3dc29bdb690ecae70c8
+
+$ docker port web-local
+80/tcp -> 127.0.0.1:8084
+
+$ curl -s http://127.0.0.1:8084/health
+ok
+
+$ curl -s -m 3 http://<LAN-IP>:8084/health || echo "LAN-IP 접근 실패 (expected)"
+LAN-IP 접근 실패 (expected)
+
+$ docker rm -f web-local
+web-local
+

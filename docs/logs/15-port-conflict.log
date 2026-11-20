@@ -1,0 +1,88 @@
+# 15. 포트 충돌 진단 및 해결 (2026-11-20 18:28:59 KST)
+
+## [상황 A] 다른 컨테이너가 이미 호스트 포트를 점유
+
+$ docker run -d -p 8080:80 --name web-8080 codyssey-web:1.0
+755be52a96525600c9b63e566aa0f9be5dea273df953b0826a54e59d578a4307
+
+$ docker run -d -p 8080:80 --name web-dup codyssey-web:1.0
+c4def30adb25249eb6831a66cf25b2ac5e0e9dc28731445383153722d27ef803
+docker: Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint web-dup (15f563bff8877e588d72cd4b5cf4d999b9f70f9a25c92a31a853a06697c8405a): Bind for 0.0.0.0:8080 failed: port is already allocated
+
+Run 'docker run --help' for more information
+
+## 진단: 누가 8080 을 쓰고 있나?
+
+$ lsof -nP -iTCP:8080 -sTCP:LISTEN
+COMMAND    PID         USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+com.docke 1722 sin-uilyeong   53u  IPv6 0x1c711d508a84a505      0t0  TCP *:8080 (LISTEN)
+
+$ netstat -anv -p tcp | grep -E 'Proto|\.8080 ' | grep -E 'Proto|LISTEN'
+Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)     rhiwat shiwat    pid   epid  state    options
+tcp46      0      0  *.8080                 *.*                    LISTEN      131072 131072   1722      0 0x0100 0x00000006
+
+$ docker ps --filter publish=8080 --format 'table {{.Names}}\t{{.Ports}}'
+NAMES      PORTS
+web-8080   0.0.0.0:8080->80/tcp
+
+## 해결 1: 대체 포트 사용 (기존 컨테이너는 유지)
+
+$ docker rm web-dup
+web-dup
+
+$ docker run -d -p 8083:80 --name web-dup codyssey-web:1.0
+f2018ec013413fab8ae4718ed3801a733366b40e6e009c02356e356a42eeb016
+
+$ sleep 2; curl -s http://localhost:8083/health
+ok
+
+## 해결 2: 점유한 컨테이너를 정리 후 원래 포트 사용
+
+$ docker rm -f web-dup web-8080
+web-dup
+web-8080
+
+$ lsof -nP -iTCP:8080 -sTCP:LISTEN || echo '8080 비어 있음'
+8080 비어 있음
+
+$ docker run -d -p 8080:80 --name web-8080 codyssey-web:1.0
+6868ecd54e3b73c2b9c8d7cca4b5f2f5c34ae9184debd73a249859e45cda6064
+
+$ sleep 2; curl -s http://localhost:8080/health
+ok
+
+## [상황 B] Docker 가 아닌 일반 프로세스가 포트를 점유
+
+$ python3 -m http.server 8099 >/dev/null 2>&1 & sleep 1
+
+$ docker run -d -p 8099:80 --name web-8099 codyssey-web:1.0
+76f0b89e2320a82b6bf7dc7bc7aa79d458c57c8b7ad58b25a19690ba7109b1aa
+docker: Error response from daemon: Ports are not available: exposing port TCP 0.0.0.0:8099 -> 127.0.0.1:0: listen tcp 0.0.0.0:8099: bind: address already in use
+
+Run 'docker run --help' for more information
+
+$ lsof -nP -iTCP:8099 -sTCP:LISTEN
+COMMAND   PID         USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+Python  15594 sin-uilyeong    5u  IPv6 0x1c711d508a850e05      0t0  TCP *:8099 (LISTEN)
+
+$ ps -p 15594 -o pid,command
+  PID COMMAND
+15594 /Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python -m http.server 8099
+
+$ kill 15594; sleep 1
+
+$ lsof -nP -iTCP:8099 -sTCP:LISTEN || echo '8099 비어 있음'
+8099 비어 있음
+
+$ docker rm web-8099
+web-8099
+
+$ docker run -d -p 8099:80 --name web-8099 codyssey-web:1.0
+e727b8e12e2a6813c4c2832ea3d53dcefc885e9f6fd666dc10a9c805ccbb1197
+
+$ sleep 2; curl -s http://localhost:8099/health
+ok
+
+$ docker rm -f web-8099
+web-8099
+

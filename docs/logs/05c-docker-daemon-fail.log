@@ -1,0 +1,24 @@
+# 05c. 데몬 연결 실패 시 출력 비교 (2026-11-20 18:30:11 KST)
+
+## 정상: 기본 컨텍스트(desktop-linux)의 소켓으로 연결
+
+$ docker context ls
+NAME              DESCRIPTION                               DOCKER ENDPOINT                                      ERROR
+default           Current DOCKER_HOST based configuration   unix:///var/run/docker.sock                          
+desktop-linux *   Docker Desktop                            unix:///Users/sin-uilyeong/.docker/run/docker.sock   
+
+$ docker info --format 'Server Version: {{.ServerVersion}}'
+Server Version: 28.1.1
+
+## 실패 재현: 존재하지 않는 소켓을 가리켜 '데몬이 꺼진 상태'와 같은 상황을 만듦 (Docker Desktop 은 끄지 않음)
+
+$ DOCKER_HOST=unix:///tmp/no-docker.sock docker info --format 'Server Version: {{.ServerVersion}}'; echo "exit code: $?"
+Server Version: 
+Cannot connect to the Docker daemon at unix:///tmp/no-docker.sock. Is the docker daemon running?
+exit code: 1
+
+$ DOCKER_HOST=unix:///tmp/no-docker.sock docker version 2>&1 | grep -E "^Client|^Server|Cannot"
+Client:
+Cannot connect to the Docker daemon at unix:///tmp/no-docker.sock. Is the docker daemon running?
+
+→ Client 정보만 나오고 Server 섹션이 없음 = CLI 는 설치됐지만 데몬과 통신 실패

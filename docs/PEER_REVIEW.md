@@ -149,7 +149,10 @@
 | B14 | **GitHub · VSCode 연동** | VSCode 계정 메뉴에 `ll-0l (GitHub)`, Source Control 에 `main` + 원격 연동 스크린샷 | [README 6.10](../README.md#610-git-설정-및-githubvscode-연동) |
 | B15 | **트러블슈팅 2건 이상** | 3건: ① OrbStack macOS 버전 ② `$(hostname)` 이 호스트에서 치환 ③ `docker stop` 10초 + Exit 137 | [README 8](../README.md#8-트러블슈팅) |
 | B16 | **보안 · 개인정보** | 저장소 전용 noreply 이메일, 개인 이메일/SSH 지문 `<masked>`, 개인키 미노출, `.env` 에 비밀 없음 | [README 11](../README.md#11-보안-및-개인정보-처리) |
-| B17 | **재현성** | README 5 의 명령만 따라 하면 동일 결과. 경로는 `$(pwd)`, 포트 충돌 시 대체 방법 안내 | [README 5](../README.md#5-빠른-재현-방법) |
+| B17 | **재현성** | README 5 의 명령만 따라 하면 동일 결과. 실행 전 `lsof` 로 포트 확인, 경로는 `$(pwd)`, Windows 대체 경로 안내 | [README 5](../README.md#5-빠른-재현-방법) |
+| B18 | **포트 충돌 진단 · 해제** | `lsof -nP -iTCP:8080 -sTCP:LISTEN` → PID 확인, `netstat -anv` 교차 확인, Docker 면 `docker ps --filter publish=8080` → `rm -f` 또는 대체 포트, 일반 프로세스면 `ps -p PID` 확인 후 `kill` | [README 6.11](../README.md#611-포트-충돌-진단-및-해결) · [로그](logs/15-port-conflict.log) |
+| B19 | **볼륨 백업 / 복원** | 임시 컨테이너로 볼륨을 `tar czf` → 새 볼륨에 `tar xzf` → `sha256sum` 일치 확인 | [README 6.9](../README.md#69-docker-볼륨-영속성) · [로그](logs/16-volume-backup.log) |
+| B20 | **정리 · 재빌드** | 컨테이너 → 이미지 순서로 `rm` / `rmi` (반대로 하면 conflict 에러), 캐시 문제는 `--no-cache --pull` | [README 6.4](../README.md#64-docker-기본-운영-명령) · [로그](logs/17-rebuild-cleanup.log) |
 
 ### B8 보충 — `run -it` / `exec` / `attach` 차이 (자주 물어봄)
 
@@ -256,6 +259,11 @@ docker rm -f web-8080 web-8081 web-bind; docker volume rm demo-data
 | `EXPOSE` 만 쓰면 접속되나요? | 안 됩니다. `EXPOSE` 는 **문서용 표시**이고, 실제로 호스트에 여는 건 `docker run -p` 입니다. |
 | `-p 8080:80` 에서 앞/뒤 숫자는? | **앞 = 호스트(내 PC)**, **뒤 = 컨테이너 안**. |
 | 같은 호스트 포트를 두 컨테이너에 쓰면? | 두 번째 실행이 `port is already allocated` 로 실패합니다. 그래서 8080/8081 로 나눴습니다. |
+| 포트를 누가 쓰는지 어떻게 찾나요? | `lsof -nP -iTCP:<포트> -sTCP:LISTEN` 으로 PID 확인 (Linux 는 `ss -ltnp`). `com.docker.backend` 로 나오면 Docker 컨테이너이므로 `docker ps --filter publish=<포트>` 로 찾아 `docker rm -f`. **com.docker 프로세스를 kill 하면 Docker 전체가 멈춥니다.** |
+| `kill` 과 `kill -9` 차이? | `kill` = SIGTERM(정리하고 종료해 달라는 요청), `kill -9` = SIGKILL(즉시 강제 종료). 먼저 `kill`, 안 될 때만 `-9`. |
+| `-p 8080:80` 과 `-p 127.0.0.1:8080:80` 차이? | 앞은 모든 인터페이스(0.0.0.0) → 같은 네트워크 다른 기기도 접속 가능, 뒤는 내 PC 에서만. 직접 확인함 ([README 6.7](../README.md#67-포트-매핑-및-접속-증거)) |
+| 볼륨은 어떻게 백업하나요? | 볼륨과 호스트 폴더를 함께 마운트한 임시 컨테이너에서 `tar czf` 로 묶어 꺼내고, 복원은 새 볼륨에 `tar xzf`. 해시로 같은지 확인했습니다. |
+| setuid / sticky 비트는? | setuid(4000): 소유자 권한으로 실행 (`/usr/bin/sudo` 의 `s`). sticky(1000): 공용 디렉토리에서 자기 파일만 삭제 (`/tmp` 의 `t`). |
 | 이미지를 지우면 실행 중 컨테이너는? | 사용 중인 이미지는 바로 못 지웁니다(`-f` 필요). 이미지는 설계도, 컨테이너는 실행 인스턴스라 관계가 있습니다. |
 | `docker ps` 와 `docker ps -a` 차이? | `ps` 는 **실행 중**만, `-a` 는 **종료된 것까지 전부**. |
 | `docker stop` 과 `docker rm` 차이? | `stop` 은 멈추기(다시 `start` 가능), `rm` 은 컨테이너 자체 삭제. |
