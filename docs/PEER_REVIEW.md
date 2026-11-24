@@ -23,7 +23,7 @@
 > **바인드 마운트**로 호스트 수정이 즉시 반영되는 것, **볼륨**으로 컨테이너를 지워도 데이터가 남는 것을 확인했습니다.
 > 보너스로 Compose 로 **nginx + Python API 두 컨테이너**를 띄워 서비스 이름으로 통신시키고, **환경 변수만 바꿔 포트/모드를 변경**했으며, **SSH 키로 push** 했습니다."
 
-**환경 특이사항 (먼저 말하기)** — 과제 안내는 OrbStack 이지만 내 Mac 은 **macOS 12** 이고 OrbStack 은 **macOS 14 이상** 만 지원합니다. 그래서 macOS 12 를 지원하는 마지막 버전인 **Docker Desktop 4.41.2** 를 사용했습니다. `docker` 명령은 똑같습니다. → [트러블슈팅 #1](../README.md#ts1)
+**환경 특이사항 (먼저 말하기)** — 과제 안내는 OrbStack 이지만 내 Mac 은 **macOS 12** 이고 OrbStack 은 **macOS 14 이상** 만 지원합니다. 그래서 macOS 12 를 지원하는 마지막 버전인 **Docker Desktop 4.41.2** 를 사용했습니다. `docker` 명령은 똑같습니다. → [트러블슈팅 #1](TROUBLESHOOTING.md#ts1)
 
 ---
 
@@ -42,7 +42,7 @@
   - 절대: `cat /Users/.../E1-1-dev-workstation/practice/docs/memo.txt`
   - → 둘 다 같은 파일 `터미널 실습 메모` 출력
 - **실무 포인트**: 문서/스크립트에 내 PC 절대 경로를 박으면 남의 PC 에서 안 돌아감 → 바인드 마운트에서 `"$(pwd)/mount-demo"` 를 사용한 이유
-- 증거: [README 6.1](../README.md#61-터미널-기본-조작)
+- 증거: [검증 6.1](VERIFICATION.md#61-터미널-기본-조작)
 
 ### A2. 파일 권한 r/w/x 와 755 / 644
 
@@ -66,7 +66,7 @@
   - `hello.sh` 644 → `./hello.sh` **permission denied** → `chmod 755` → 실행 성공
   - `greeting.txt` 444 → 내용 추가 **실패** → 644 → 성공
   - `docs/` 555 → 파일 생성 실패 / 311 → `ls` 실패지만 이름 알면 `cat` 가능 / 644 → `x` 없어서 `cat` 실패
-- 증거: [README 6.2](../README.md#62-권한-실습) · [로그](logs/04-permission.log)
+- 증거: [검증 6.2](VERIFICATION.md#62-권한-실습) · [로그](logs/04-permission.log)
 
 ### A3. 기존 Dockerfile 기반 커스텀 이미지
 
@@ -84,7 +84,7 @@
 
 - **이미지 vs 컨테이너**: 이미지 = 붕어빵 틀(읽기 전용 설계도), 컨테이너 = 틀로 찍은 붕어빵(실행 중인 인스턴스). 하나의 이미지로 컨테이너 여러 개 가능 (8080/8081)
 - **레이어**: Dockerfile 한 줄 = 레이어 하나. 바뀐 줄부터만 다시 빌드 → 빌드가 빠름
-- 증거: [README 6.6](../README.md#66-dockerfile-기반-커스텀-이미지) · [Dockerfile](../app/Dockerfile) · [빌드 로그](logs/08-build-run.log)
+- 증거: [검증 6.6](VERIFICATION.md#66-dockerfile-기반-커스텀-이미지) · [Dockerfile](../app/Dockerfile) · [빌드 로그](logs/08-build-run.log)
 
 ### A4. 포트 매핑이 필요한 이유
 
@@ -93,7 +93,7 @@
 - **내 실습**: 컨테이너 안은 둘 다 80 인데 호스트 포트만 8080 / 8081 로 다르게 → **충돌 없이 동시에 실행**
   - `X-Served-By` 헤더 값이 서로 달라 **다른 컨테이너가 응답한 것**까지 확인
 - **반대 사례**: Compose 의 api(5000)는 일부러 매핑 안 함 → 외부에서 `localhost:5000` 접속 실패 = **필요한 것만 공개하는 보안 습관**
-- 증거: [README 6.7](../README.md#67-포트-매핑-및-접속-증거) (curl + 브라우저 스크린샷)
+- 증거: [검증 6.7](VERIFICATION.md#67-포트-매핑-및-접속-증거) (curl + 브라우저 스크린샷)
 
 ### A5. Docker 볼륨 (영속 데이터)
 
@@ -113,7 +113,7 @@
 | 단점/장점 | PC 경로에 의존 | 이름만으로 사용, 이식성 좋음 |
 
 - 바인드 마운트 실험: 호스트에서 `mount-demo/index.html` 을 v1 → v2 로 고치자 **재시작 없이** `curl` 결과가 바로 v2. `:ro`(읽기 전용)라서 컨테이너 안에서 쓰기는 거부됨
-- 증거: [README 6.8](../README.md#68-바인드-마운트-호스트-변경-즉시-반영) · [README 6.9](../README.md#69-docker-볼륨-영속성) · [로그](logs/10-mount-volume.log)
+- 증거: [검증 6.8](VERIFICATION.md#68-바인드-마운트-호스트-변경-즉시-반영) · [검증 6.9](VERIFICATION.md#69-docker-볼륨-영속성) · [로그](logs/10-mount-volume.log)
 
 ### A6. Git vs GitHub
 
@@ -126,7 +126,7 @@
 | 연결 | `git remote add origin ...` → `git push / pull` | |
 
 - **비유**: Git = 내 노트의 "변경 기록", GitHub = 그 노트를 팀과 같이 보는 "공유 드라이브"
-- 증거: [README 6.10](../README.md#610-git-설정-및-githubvscode-연동)
+- 증거: [검증 6.10](VERIFICATION.md#610-git-설정-및-githubvscode-연동)
 
 ---
 
@@ -134,26 +134,26 @@
 
 | # | 평가 항목 | 한 줄 답변 | 증거 |
 |---|---|---|---|
-| B1 | **저장소 · 기술 문서** | 공개 저장소, README 하나에 개요/환경/체크리스트/검증 방법/트러블슈팅 모두 포함, 원본 로그는 `docs/logs/` | [README 목차](../README.md#목차) |
+| B1 | **저장소 · 기술 문서** | 공개 저장소. README 는 목적·환경·결과 요약·재현 방법만 간결하게, 상세 검증은 `docs/VERIFICATION.md` 등 별도 문서, 원본 로그는 `docs/logs/` (동료평가 피드백 반영) | [README 목차](../README.md#목차) |
 | B2 | **실행 환경 기록** | macOS 12.7.6 / zsh / VSCode 터미널 / Docker 28.1.1 (Desktop 4.41.2) / Git 2.37.1 | [README 2](../README.md#2-실행-환경) |
-| B3 | **터미널 조작** | `pwd`, `ls -la`(숨김 포함), `cd`, `mkdir -p`, `cp`(-r), `mv`(이동·이름변경), `rm`(-r), `cat`, `touch`(빈 파일) 모두 수행 | [README 6.1](../README.md#61-터미널-기본-조작) |
-| B4 | **권한 실습** | 파일 2개(`hello.sh`, `greeting.txt`) + 디렉토리 1개(`docs`) 전/후 비교, 성공/실패 결과까지 기록 | [README 6.2](../README.md#62-권한-실습) |
-| B5 | **Docker 설치 · 점검** | `docker --version` + `docker version`(Client/Server 둘 다 나옴) + `docker info` | [README 6.3](../README.md#63-docker-설치-및-점검) |
-| B6 | **Docker 기본 운영** | `pull`, `images`, `ps`, `ps -a`, `start/stop`, `logs`, `stats --no-stream` | [README 6.4](../README.md#64-docker-기본-운영-명령) |
-| B7 | **hello-world / ubuntu** | hello-world 성공, ubuntu 진입 후 `ls`, `echo`, `cat /etc/os-release` | [README 6.5](../README.md#65-컨테이너-실행-실습-hello-world--ubuntu) |
-| B8 | **attach vs exec 관찰** | 아래 표 참고 | [README 6.5](../README.md#65-컨테이너-실행-실습-hello-world--ubuntu) |
-| B9 | **커스텀 이미지** | 베이스 `nginx:alpine`, 커스텀 포인트 6개 + 목적, 빌드/실행/inspect 결과 | [README 6.6](../README.md#66-dockerfile-기반-커스텀-이미지) |
-| B10 | **포트 매핑 접속** | 8080, 8081 두 번 실행, curl 200 OK + 브라우저(주소창 포함) 스크린샷 | [README 6.7](../README.md#67-포트-매핑-및-접속-증거) |
-| B11 | **바인드 마운트** | 실행 명령 + 호스트 수정 전(v1)/후(v2) curl 비교 + `:ro` 쓰기 거부 | [README 6.8](../README.md#68-바인드-마운트-호스트-변경-즉시-반영) |
-| B12 | **볼륨 영속성** | 생성 → 연결 → 쓰기 → 컨테이너 삭제 → 새 컨테이너에서 확인 + 대조 실험 | [README 6.9](../README.md#69-docker-볼륨-영속성) |
-| B13 | **Git 설정** | `user.name`, `user.email`, `init.defaultBranch=main`, `git config --list --show-origin` | [README 6.10](../README.md#610-git-설정-및-githubvscode-연동) |
-| B14 | **GitHub · VSCode 연동** | VSCode 계정 메뉴에 `ll-0l (GitHub)`, Source Control 에 `main` + 원격 연동 스크린샷 | [README 6.10](../README.md#610-git-설정-및-githubvscode-연동) |
-| B15 | **트러블슈팅 2건 이상** | 3건: ① OrbStack macOS 버전 ② `$(hostname)` 이 호스트에서 치환 ③ `docker stop` 10초 + Exit 137 | [README 8](../README.md#8-트러블슈팅) |
-| B16 | **보안 · 개인정보** | 저장소 전용 noreply 이메일, 개인 이메일/SSH 지문 `<masked>`, 개인키 미노출, `.env` 에 비밀 없음 | [README 11](../README.md#11-보안-및-개인정보-처리) |
-| B17 | **재현성** | README 5 의 명령만 따라 하면 동일 결과. 실행 전 `lsof` 로 포트 확인, 경로는 `$(pwd)`, Windows 대체 경로 안내 | [README 5](../README.md#5-빠른-재현-방법) |
-| B18 | **포트 충돌 진단 · 해제** | `lsof -nP -iTCP:8080 -sTCP:LISTEN` → PID 확인, `netstat -anv` 교차 확인, Docker 면 `docker ps --filter publish=8080` → `rm -f` 또는 대체 포트, 일반 프로세스면 `ps -p PID` 확인 후 `kill` | [README 6.11](../README.md#611-포트-충돌-진단-및-해결) · [로그](logs/15-port-conflict.log) |
-| B19 | **볼륨 백업 / 복원** | 임시 컨테이너로 볼륨을 `tar czf` → 새 볼륨에 `tar xzf` → `sha256sum` 일치 확인 | [README 6.9](../README.md#69-docker-볼륨-영속성) · [로그](logs/16-volume-backup.log) |
-| B20 | **정리 · 재빌드** | 컨테이너 → 이미지 순서로 `rm` / `rmi` (반대로 하면 conflict 에러), 캐시 문제는 `--no-cache --pull` | [README 6.4](../README.md#64-docker-기본-운영-명령) · [로그](logs/17-rebuild-cleanup.log) |
+| B3 | **터미널 조작** | `pwd`, `ls -la`(숨김 포함), `cd`, `mkdir -p`, `cp`(-r), `mv`(이동·이름변경), `rm`(-r), `cat`, `touch`(빈 파일) 모두 수행 | [검증 6.1](VERIFICATION.md#61-터미널-기본-조작) |
+| B4 | **권한 실습** | 파일 2개(`hello.sh`, `greeting.txt`) + 디렉토리 1개(`docs`) 전/후 비교, 성공/실패 결과까지 기록 | [검증 6.2](VERIFICATION.md#62-권한-실습) |
+| B5 | **Docker 설치 · 점검** | `docker --version` + `docker version`(Client/Server 둘 다 나옴) + `docker info` | [검증 6.3](VERIFICATION.md#63-docker-설치-및-점검) |
+| B6 | **Docker 기본 운영** | `pull`, `images`, `ps`, `ps -a`, `start/stop`, `logs`, `stats --no-stream` | [검증 6.4](VERIFICATION.md#64-docker-기본-운영-명령) |
+| B7 | **hello-world / ubuntu** | hello-world 성공, ubuntu 진입 후 `ls`, `echo`, `cat /etc/os-release` | [검증 6.5](VERIFICATION.md#65-컨테이너-실행-실습-hello-world--ubuntu) |
+| B8 | **attach vs exec 관찰** | 아래 표 참고 | [검증 6.5](VERIFICATION.md#65-컨테이너-실행-실습-hello-world--ubuntu) |
+| B9 | **커스텀 이미지** | 베이스 `nginx:alpine`, 커스텀 포인트 6개 + 목적, 빌드/실행/inspect 결과 | [검증 6.6](VERIFICATION.md#66-dockerfile-기반-커스텀-이미지) |
+| B10 | **포트 매핑 접속** | 8080, 8081 두 번 실행, curl 200 OK + 브라우저(주소창 포함) 스크린샷 | [검증 6.7](VERIFICATION.md#67-포트-매핑-및-접속-증거) |
+| B11 | **바인드 마운트** | 실행 명령 + 호스트 수정 전(v1)/후(v2) curl 비교 + `:ro` 쓰기 거부 | [검증 6.8](VERIFICATION.md#68-바인드-마운트-호스트-변경-즉시-반영) |
+| B12 | **볼륨 영속성** | 생성 → 연결 → 쓰기 → 컨테이너 삭제 → 새 컨테이너에서 확인 + 대조 실험 | [검증 6.9](VERIFICATION.md#69-docker-볼륨-영속성) |
+| B13 | **Git 설정** | `user.name`, `user.email`, `init.defaultBranch=main`, `git config --list --show-origin` | [검증 6.10](VERIFICATION.md#610-git-설정-및-githubvscode-연동) |
+| B14 | **GitHub · VSCode 연동** | VSCode 계정 메뉴에 `ll-0l (GitHub)`, Source Control 에 `main` + 원격 연동 스크린샷 | [검증 6.10](VERIFICATION.md#610-git-설정-및-githubvscode-연동) |
+| B15 | **트러블슈팅 2건 이상** | 3건: ① OrbStack macOS 버전 ② `$(hostname)` 이 호스트에서 치환 ③ `docker stop` 10초 + Exit 137 | [트러블슈팅](TROUBLESHOOTING.md) |
+| B16 | **보안 · 개인정보** | 저장소 전용 noreply 이메일, 개인 이메일/SSH 지문 `<masked>`, 개인키 미노출, `.env` 에 비밀 없음 | [README 6](../README.md#6-보안-및-개인정보-처리) |
+| B17 | **재현성** | README 4 의 명령만 따라 하면 동일 결과. 실행 전 `lsof` 로 포트 확인, 경로는 `$(pwd)`, Windows 대체 경로 안내 | [README 4](../README.md#4-빠른-재현-방법) |
+| B18 | **포트 충돌 진단 · 해제** | `lsof -nP -iTCP:8080 -sTCP:LISTEN` → PID 확인, `netstat -anv` 교차 확인, Docker 면 `docker ps --filter publish=8080` → `rm -f` 또는 대체 포트, 일반 프로세스면 `ps -p PID` 확인 후 `kill` | [검증 6.11](VERIFICATION.md#611-포트-충돌-진단-및-해결) · [로그](logs/15-port-conflict.log) |
+| B19 | **볼륨 백업 / 복원** | 임시 컨테이너로 볼륨을 `tar czf` → 새 볼륨에 `tar xzf` → `sha256sum` 일치 확인 | [검증 6.9](VERIFICATION.md#69-docker-볼륨-영속성) · [로그](logs/16-volume-backup.log) |
+| B20 | **정리 · 재빌드** | 컨테이너 → 이미지 순서로 `rm` / `rmi` (반대로 하면 conflict 에러), 캐시 문제는 `--no-cache --pull` | [검증 6.4](VERIFICATION.md#64-docker-기본-운영-명령) · [로그](logs/17-rebuild-cleanup.log) |
 
 ### B8 보충 — `run -it` / `exec` / `attach` 차이 (자주 물어봄)
 
@@ -177,11 +177,11 @@
 
 | # | 항목 | 한 줄 답변 | 배움 포인트 | 증거 |
 |---|---|---|---|---|
-| C1 | **Compose 기초** | `docker run -d -p 8085:80 ...` 을 `compose/single/docker-compose.yml` 로 옮겨 `docker compose up -d` 한 줄로 실행 | 긴 명령어가 **저장소에 남는 실행 문서**가 됨 → 누구나 같은 구성 재현 | [README 7.1](../README.md#71-compose-기초-단일-서비스) |
-| C2 | **멀티 컨테이너 + 통신** | web(nginx) + api(Python) 를 같은 네트워크로 실행. `web → http://api:5000`, `api → http://web` 양방향 성공 | **서비스 이름 = DNS 이름**. IP 가 바뀌어도 이름으로 찾음 (서비스 디스커버리) | [README 7.2](../README.md#72-compose-멀티-컨테이너--서비스-간-통신) |
-| C3 | **운영 명령** | `up -d --build` → `ps` → `logs` → `down` → `ps -a` 로 정리 확인 | **상태 확인 루틴**: 띄우고 → 상태 → 로그 → 내리고 → 남은 것 확인 | [README 7.3](../README.md#73-compose-운영-루틴) |
-| C4 | **환경 변수** | `.env` 기본값(8090/5000/dev) → `WEB_PORT=8091 API_PORT=7000 APP_MODE=prod docker compose up -d` 로 코드 수정 없이 변경 | **설정과 코드 분리** → 같은 이미지를 개발/운영에 그대로 사용 | [README 7.4](../README.md#74-환경-변수로-포트모드-변경) |
-| C5 | **SSH 키** | `ssh -T git@github.com` → `Hi ll-0l!`, remote 가 `git@github.com:...` 형식, push 성공 | 비밀번호/토큰을 보내지 않고 **개인키(내 PC) + 공개키(GitHub 등록)** 쌍으로 인증 | [README 7.5](../README.md#75-github-ssh-키) |
+| C1 | **Compose 기초** | `docker run -d -p 8085:80 ...` 을 `compose/single/docker-compose.yml` 로 옮겨 `docker compose up -d` 한 줄로 실행 | 긴 명령어가 **저장소에 남는 실행 문서**가 됨 → 누구나 같은 구성 재현 | [보너스 7.1](BONUS.md#71-compose-기초-단일-서비스) |
+| C2 | **멀티 컨테이너 + 통신** | web(nginx) + api(Python) 를 같은 네트워크로 실행. `web → http://api:5000`, `api → http://web` 양방향 성공 | **서비스 이름 = DNS 이름**. IP 가 바뀌어도 이름으로 찾음 (서비스 디스커버리) | [보너스 7.2](BONUS.md#72-compose-멀티-컨테이너--서비스-간-통신) |
+| C3 | **운영 명령** | `up -d --build` → `ps` → `logs` → `down` → `ps -a` 로 정리 확인 | **상태 확인 루틴**: 띄우고 → 상태 → 로그 → 내리고 → 남은 것 확인 | [보너스 7.3](BONUS.md#73-compose-운영-루틴) |
+| C4 | **환경 변수** | `.env` 기본값(8090/5000/dev) → `WEB_PORT=8091 API_PORT=7000 APP_MODE=prod docker compose up -d` 로 코드 수정 없이 변경 | **설정과 코드 분리** → 같은 이미지를 개발/운영에 그대로 사용 | [보너스 7.4](BONUS.md#74-환경-변수로-포트모드-변경) |
+| C5 | **SSH 키** | `ssh -T git@github.com` → `Hi ll-0l!`, remote 가 `git@github.com:...` 형식, push 성공 | 비밀번호/토큰을 보내지 않고 **개인키(내 PC) + 공개키(GitHub 등록)** 쌍으로 인증 | [보너스 7.5](BONUS.md#75-github-ssh-키) |
 
 ### C2 보충 — 구조 그림으로 설명하기
 
@@ -262,7 +262,7 @@ docker rm -f web-8080 web-8081 web-bind; docker volume rm demo-data
 | 같은 호스트 포트를 두 컨테이너에 쓰면? | 두 번째 실행이 `port is already allocated` 로 실패합니다. 그래서 8080/8081 로 나눴습니다. |
 | 포트를 누가 쓰는지 어떻게 찾나요? | `lsof -nP -iTCP:<포트> -sTCP:LISTEN` 으로 PID 확인 (Linux 는 `ss -ltnp`). `com.docker.backend` 로 나오면 Docker 컨테이너이므로 `docker ps --filter publish=<포트>` 로 찾아 `docker rm -f`. **com.docker 프로세스를 kill 하면 Docker 전체가 멈춥니다.** |
 | `kill` 과 `kill -9` 차이? | `kill` = SIGTERM(정리하고 종료해 달라는 요청), `kill -9` = SIGKILL(즉시 강제 종료). 먼저 `kill`, 안 될 때만 `-9`. |
-| `-p 8080:80` 과 `-p 127.0.0.1:8080:80` 차이? | 앞은 모든 인터페이스(0.0.0.0) → 같은 네트워크 다른 기기도 접속 가능, 뒤는 내 PC 에서만. 직접 확인함 ([README 6.7](../README.md#67-포트-매핑-및-접속-증거)) |
+| `-p 8080:80` 과 `-p 127.0.0.1:8080:80` 차이? | 앞은 모든 인터페이스(0.0.0.0) → 같은 네트워크 다른 기기도 접속 가능, 뒤는 내 PC 에서만. 직접 확인함 ([검증 6.7](VERIFICATION.md#67-포트-매핑-및-접속-증거)) |
 | 볼륨은 어떻게 백업하나요? | 볼륨과 호스트 폴더를 함께 마운트한 임시 컨테이너에서 `tar czf` 로 묶어 꺼내고, 복원은 새 볼륨에 `tar xzf`. 해시로 같은지 확인했습니다. |
 | setuid / sticky 비트는? | setuid(4000): 소유자 권한으로 실행 (`/usr/bin/sudo` 의 `s`). sticky(1000): 공용 디렉토리에서 자기 파일만 삭제 (`/tmp` 의 `t`). |
 | 이미지를 지우면 실행 중 컨테이너는? | 사용 중인 이미지는 바로 못 지웁니다(`-f` 필요). 이미지는 설계도, 컨테이너는 실행 인스턴스라 관계가 있습니다. |
